@@ -1,19 +1,22 @@
-import express from 'express'
-import userRoutes from './routes/user-routes.js';
+import app from './app.js';
+import { sequelize, connectDB } from './config/database.js'
+
  
-const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+const startServer = async () => {
+  await connectDB();
+
+  // Creates/updates tables
+  await sequelize.sync();
+  console.log('All Tables synced ✅');
+
+  app.listen(PORT, () => {
+  console.log(`Server up! listening on port ${PORT}`);
+  });
+
+}
 
 
+startServer();
 
-//routes
-app.use('/', userRoutes);
-
-
-
-
-app.listen(port, () => {
-  console.log(`Server up! listening on port ${port}`);
-});
