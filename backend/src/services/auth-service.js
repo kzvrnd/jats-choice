@@ -1,7 +1,7 @@
 import { User } from '../models/index.js';
 import bcrypt from 'bcrypt';
 
-export const login = (req, res) => {
+export const login = async({ email, password}) => {
   
   
 };
@@ -10,7 +10,7 @@ export const logout = (req, res) => {
   
 }
 
-export const signup = async(username, email, password,) => {
+export const signup = async({username, email, password}) => {
   
   const existingUser = await User.findOne({where: { email } });
   if (existingUser) {
