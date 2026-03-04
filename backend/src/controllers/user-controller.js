@@ -48,7 +48,20 @@ export const createUser = async(req, res) => {
 export const loginUser = async(req, res) => {
   const { email, password } = req.body;
 
-  const user = await login(email, password);
+  if (!email || !password) {
+    return res.status(400).json({ message: "Missing required fields"});
+  }
+
+  try {
+    const user = await login({email, password});
+
+    res.send(`${user.username} Logged in successfully`);
+
+  } catch (error) {
+    console.log(error);
+
+    return res.status(401).json({ message: "Invalid credentials"});
+  }  
 }
 
 export const logoutUser = (req, res) => {
