@@ -3,14 +3,24 @@ import bcrypt from 'bcrypt';
 
 export const login = async({ email, password}) => {
   
+  const user = await User.findOne({where: { email } });
+
+  if (!user) {
+    throw new Error('Invalid credentials.');
+  }  
+  const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+  if (!isPasswordValid) {
+    throw new Error('Invalid credentials.');
+  }
   
+  return {id: user.id, username: user.username, email: user.email, createdAt: user.createdAt };
 };
 
 export const logout = (req, res) => {
   
 }
 
-export const signup = async({username, email, password}) => {
+export const signup = async({ username, email, password }) => {
   
   const existingUser = await User.findOne({where: { email } });
   if (existingUser) {
