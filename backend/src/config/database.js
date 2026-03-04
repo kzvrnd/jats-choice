@@ -14,7 +14,7 @@ export const sequelize = new Sequelize({
 
 export const connectDB = async () => {
   try{
-    // Just tests the connection does not create tables (sqlite file base so no real connection yet)
+    // Just tests the connection does not create tables (sqlite file based so no real connection yet)
     await sequelize.authenticate();
     console.log('Connection has been established successfully. ✅');
   } catch (error) {
