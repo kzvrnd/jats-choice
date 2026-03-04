@@ -1,5 +1,4 @@
-import { signup } from '../services/auth-service.js';
-
+import { signup, login } from '../services/auth-service.js';
 
 import { User } from '../models/index.js';
 
@@ -12,7 +11,12 @@ export const getUsers = async(req, res) => {
     return res.status(404).json({ message: "No users found"});
   }
 
-  return res.send(users);
+  const temp = [];
+
+  users.forEach((user) => {
+    temp.push(`${user.id} ${user.username} ${user.email}`);
+  })
+  return res.send(temp);
 }
 
 export const createUser = async(req, res) => {
@@ -23,24 +27,28 @@ export const createUser = async(req, res) => {
   }  
   
   try {
-    const user = await signup(username, email, password);
+    const user = await signup({ username, email, password });
 
     return res.status(201).json({
       success: true,
       message: "User created successfully",
       data: {
-        user: { userId: user.id, username, email }
+        user: { userId: user.id, username: user.username, email: user.email }
       }
     });
 
   } catch (error) {
+    console.log(error);
+
     res.status(400).json({ message: "Error creating user", error: error.message});
   }
 
 } 
 
-export const loginUser = (req, res) => {
-  res.send(`login endpoint`);
+export const loginUser = async(req, res) => {
+  const { email, password } = req.body;
+
+  const user = await login(email, password);
 }
 
 export const logoutUser = (req, res) => {
