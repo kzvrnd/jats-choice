@@ -53,9 +53,13 @@ export const loginUser = async(req, res) => {
   }
 
   try {
-    const user = await login({email, password});
+    const { token, user }  = await login({email, password});
 
-    res.send(`${user.username} Logged in successfully`);
+    // option for secure cookie set to false for development only
+    res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
+    
+    res.status(200).json({ message: `${user.username} Logged in successfully` });
+    
 
   } catch (error) {
     console.log(error);
