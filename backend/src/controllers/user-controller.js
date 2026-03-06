@@ -1,4 +1,4 @@
-import { signup, login } from '../services/auth-service.js';
+import { signup, login, getCurrentUser } from '../services/auth-service.js';
 
 import { User } from '../models/index.js';
 
@@ -71,4 +71,9 @@ export const loginUser = async(req, res) => {
 export const logoutUser = (req, res) => {
   res.clearCookie('token', { httpOnly: true, secure: false, sameSite: 'lax' });
   return res.status(200).json({ message: `User Logged out successfully`});
+}
+
+export const getMe = (req, res) => {  
+ 
+    res.json({ userId: req.user.id, username: req.user.username, email: req.user.email });
 }

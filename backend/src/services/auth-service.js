@@ -7,8 +7,6 @@ export const login = async({ email, password}) => {
   
   const user = await User.findOne({where: { email } });
 
-
-
   if (!user) {
     throw new Error('Invalid credentials.');
   }  
@@ -42,4 +40,14 @@ export const signup = async({ username, email, password }) => {
 
   return { id: user.id, username: user.username, email: user.email, createdAt: user.createdAt };
 
+}
+
+export const getCurrentUser = async (userId) => {
+  const user = await User.findByPk(userId);
+
+  if (!user) {
+    throw new Error('User not found.');
+  }
+
+  return { id: user.id, username: user.username, email: user.email, createdAt: user.createdAt };
 }
