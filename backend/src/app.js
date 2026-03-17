@@ -16,9 +16,10 @@ app.use(cookieParser());
 app.use('/api/auth', userRoutes);
 
 
-app.get('/api/auth/private', authenticate, (req, res) => {
-  res.send('This is a private route.');
-}); 
+
+
+
+
 
 
 export default app;

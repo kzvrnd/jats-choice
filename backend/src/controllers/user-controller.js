@@ -73,7 +73,40 @@ export const logoutUser = (req, res) => {
   return res.status(200).json({ message: `User Logged out successfully`});
 }
 
-export const getMe = (req, res) => {  
- 
-    res.json({ userId: req.user.id, username: req.user.username, email: req.user.email });
+export const getMe = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const curUser = await getCurrentUser(userId);
+
+    return res.status(200).json({ user: curUser });
+  } catch (error) {
+    console.log(error);
+    return res.status(401).json({ message: "Error retrieving user"});
+  } 
+
+}  
+  
+
+
+
+
+//test or private routes
+
+
+export const privateRoute = (req, res) => {
+  const user = req.user;
+
+  
+  if (user) {
+    return res.status(200).json({ message: "Private route accessed successfully", user: user });
+  } else {
+    return res.status(401).json({ message: "Unauthorized" }); 
+  }
 }
+
+export const allUsers = async (req, res) => {
+  const user_list = await User.findAll();
+
+  return res.status(200).json({ users: user_list });
+}
+  
