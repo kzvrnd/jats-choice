@@ -16,7 +16,6 @@ const startServer = async () => {
   });
 
 }
-
-
+console.log(Object.keys(sequelize.models)); // prints current models by name
 startServer();
 
