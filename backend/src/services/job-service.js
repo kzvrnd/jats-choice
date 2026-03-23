@@ -1,4 +1,4 @@
-import { User, Job } from "../models/index.js";
+import { Job } from "../models/index.js";
 
 
 export const createJob = async( userId, jobData ) => {
@@ -23,6 +23,19 @@ export const getJobsByUser = async (userId) => {
   return await Job.findAll({ where: { userId }});
 }
 
+
+export const deleteJob = async (userId, jobId) => {
+  // Important that the userID is included so there is an owenership check and users can only delete their own jobs
+  const job = await Job.findOne({ where: { id: jobId, userId } });
+  
+  if (!job) {
+    const error = new Error ('Job not found.');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  await job.destroy();
+}
 
 
 /*
