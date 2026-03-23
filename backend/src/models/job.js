@@ -43,5 +43,7 @@ export const Job = sequelize.define("Job", {
     }
   }
 
-
 });
+
+
+

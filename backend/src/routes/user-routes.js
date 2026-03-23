@@ -20,6 +20,7 @@ router.get('/allusers', allUsers);
 //private routes
 router.get('/private', authenticate, privateRoute);
 
+
 export default router
 
 

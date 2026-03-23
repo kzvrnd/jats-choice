@@ -22,10 +22,6 @@ export const login = async({ email, password}) => {
   return {token, user: {id: user.id, username: user.username, email: user.email, createdAt: user.createdAt }};
 };
 
-export const logout = (req, res) => {
-  
-}
-
 export const signup = async({ username, email, password }) => {
   
   const existingUser = await User.findOne({where: { email } });
