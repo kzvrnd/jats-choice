@@ -3,6 +3,7 @@ import { signup, login, getCurrentUser } from '../services/auth-service.js';
 import { User } from '../models/index.js';
 
 
+
 export const getUsers = async(req, res) => {
  
   const users = await User.findAll();
@@ -110,3 +111,31 @@ export const allUsers = async (req, res) => {
   return res.status(200).json({ users: user_list });
 }
   
+
+export const addJob = async (req, res) => {
+  const { title, company } = req.body;
+
+  try {
+    const user = await User.findByPk(req.user.id);
+    const job = await user.createJob({ title, company });
+    //const job = await Job.create({ title, company, userId: req.user.id });
+    return res.status(201).json({ message: "Job created successfully", job: job });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Error creating job"});
+  }
+}
+
+
+export const getJobs = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+    const jobs = await user.getJobs();
+    return res.status(200).json({ jobs: jobs });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Error getting jobs"});
+  }
+}
+
+

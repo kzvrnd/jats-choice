@@ -1,8 +1,9 @@
 import express from 'express'
 import userRoutes from './routes/user-routes.js';
+import jobRoutes from './routes/job-routes.js';
 import 'dotenv/config.js';
 import cookieParser from 'cookie-parser';
-import { authenticate } from './middleware/auth-middleware.js';
+
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(cookieParser());
 
 //routes
 app.use('/api/auth', userRoutes);
+app.use('/api/jobs', jobRoutes);
 
 
 
