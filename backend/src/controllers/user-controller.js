@@ -1,78 +1,6 @@
-import { signup, login, getCurrentUser } from '../services/auth-service.js';
+import { getCurrentUser } from '../services/user-service.js';
 
 import { User } from '../models/index.js';
-
-
-
-export const getUsers = async(req, res) => {
- 
-  const users = await User.findAll();
-
-  if (users.length === 0) {
-    return res.status(404).json({ message: "No users found"});
-  }
-
-  const temp = [];
-
-  users.forEach((user) => {
-    temp.push(`${user.id} ${user.username} ${user.email}`);
-  })
-  return res.send(temp);
-}
-
-export const createUser = async(req, res) => {
-  const { username, email, password } = req.body;
-
-  if (!username || !email || !password ) {
-    return res.status(400).json({ message: "Missing required fields"});
-  }  
-  
-  try {
-    const user = await signup({ username, email, password });
-
-    return res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      data: {
-        user: { userId: user.id, username: user.username, email: user.email }
-      }
-    });
-
-  } catch (error) {
-    console.log(error);
-
-    res.status(400).json({ message: "Error creating user", error: error.message});
-  }
-
-} 
-
-export const loginUser = async(req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: "Missing required fields"});
-  }
-
-  try {
-    const { token, user }  = await login({email, password});
-
-    // option for secure cookie set to false for development only
-    res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
-    
-    res.status(200).json({ message: `${user.username} Logged in successfully` });
-    
-
-  } catch (error) {
-    console.log(error);
-
-    return res.status(401).json({ message: "Invalid credentials"});
-  }  
-}
-
-export const logoutUser = (req, res) => {
-  res.clearCookie('token', { httpOnly: true, secure: false, sameSite: 'lax' });
-  return res.status(200).json({ message: `User Logged out successfully`});
-}
 
 export const getMe = async (req, res) => {
   try {
@@ -88,54 +16,29 @@ export const getMe = async (req, res) => {
 }  
   
 
-
-
-
 //test or private routes
-
-
-export const privateRoute = (req, res) => {
-  const user = req.user;
-
-  
-  if (user) {
-    return res.status(200).json({ message: "Private route accessed successfully", user: user });
-  } else {
-    return res.status(401).json({ message: "Unauthorized" }); 
-  }
-}
 
 export const allUsers = async (req, res) => {
   const user_list = await User.findAll();
 
   return res.status(200).json({ users: user_list });
 }
-  
 
-export const addJob = async (req, res) => {
-  const { title, company } = req.body;
+//temporary for testing purposes
+export const getUsers = async(req, res) => {
+ 
+  const users = await User.findAll();
 
-  try {
-    const user = await User.findByPk(req.user.id);
-    const job = await user.createJob({ title, company });
-    //const job = await Job.create({ title, company, userId: req.user.id });
-    return res.status(201).json({ message: "Job created successfully", job: job });
-  } catch (error) {
-    console.log(error);
-    return res.status(400).json({ message: "Error creating job"});
+  if (users.length === 0) {
+    return res.status(404).json({ message: "No users found"});
   }
-}
 
+  const temp = [];
 
-export const getJobs = async (req, res) => {
-  try {
-    const user = await User.findByPk(req.user.id);
-    const jobs = await user.getJobs();
-    return res.status(200).json({ jobs: jobs });
-  } catch (error) {
-    console.log(error);
-    return res.status(400).json({ message: "Error getting jobs"});
-  }
+  users.forEach((user) => {
+    temp.push(`${user.id} ${user.username} ${user.email}`);
+  })
+  return res.send(temp);
 }
 
 
