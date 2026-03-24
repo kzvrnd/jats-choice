@@ -1,5 +1,6 @@
 import express from 'express'
 import userRoutes from './routes/user-routes.js';
+import authRoutes from './routes/auth-routes.js';
 import jobRoutes from './routes/job-routes.js';
 import 'dotenv/config.js';
 import cookieParser from 'cookie-parser';
@@ -14,7 +15,8 @@ app.use(cookieParser());
 
 
 //routes
-app.use('/api/auth', userRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 
 
