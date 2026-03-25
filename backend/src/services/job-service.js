@@ -25,7 +25,7 @@ export const getJobsByUser = async (userId) => {
 
 
 export const deleteJob = async (userId, jobId) => {
-  // Important that the userID is included so there is an owenership check and users can only delete their own jobs
+  // Important that the userID is included so there is an ownership check and users can only delete their own jobs
   const job = await Job.findOne({ where: { id: jobId, userId } });
   
   if (!job) {
@@ -36,6 +36,20 @@ export const deleteJob = async (userId, jobId) => {
 
   await job.destroy();
 }
+
+export const update = async (userId, jobId, jobData) => {
+  const job = await Job.findOne({ where: { id: jobId, userId } });
+  
+  if (!job) {
+    const error = new Error ('Job not found.');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  await job.update(jobData);
+
+  return job;
+} 
 
 
 /*
