@@ -46,7 +46,17 @@ export const update = async (userId, jobId, jobData) => {
     throw error;
   }
 
-  await job.update(jobData);
+  const allowedFields = ["title", "company", "description", "location", "salary", "contact"];
+  const filteredData = {};
+
+  for (const key of allowedFields) {
+    if (jobData[key] !== undefined) {
+      filteredData[key] = jobData[key];
+    }
+  }
+
+  await job.update(filteredData);
+  
 
   return job;
 } 
