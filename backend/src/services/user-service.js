@@ -1,6 +1,7 @@
 import { User } from '../models/index.js';
 
 export const getCurrentUserInfo = async (userId) => {
+
   const user = await User.findByPk(userId);
 
   if (!user) {
