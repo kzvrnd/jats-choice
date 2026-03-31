@@ -2,7 +2,7 @@ import { Job } from "../models/index.js";
 
 
 export const createJob = async( userId, jobData ) => {
-  const {title, company } = jobData;
+  const {title, company, location, description, status, employmentType, contact, salaryMin, salaryMax } = jobData;
 
   if (!title || !company) {
     const error = new Error ('Title and company are required.');
@@ -14,7 +14,7 @@ export const createJob = async( userId, jobData ) => {
   // const job = await user.createJob({ title, company });
 
   // Both of these are valid returns, but just returning the promise seems to be more preferred and no await.
-  return await Job.create({ title, company, userId });
+  return await Job.create({ title, company, location, description, status, employmentType, contact, salaryMin, salaryMax, userId });
   //return Jobs.create({ title, company, userId });
   
 }
@@ -46,9 +46,14 @@ export const update = async (userId, jobId, jobData) => {
     throw error;
   }
 
-  const allowedFields = ["title", "company", "description", "location", "salary", "contact"];
+  const allowedFields = [
+    "title", "company", "location",
+    "description", "status", "employmentType",
+    "salaryMin", "salaryMax", "contact"
+  ];
   const filteredData = {};
 
+  // Only update the fields that are in the allowedFields array
   for (const key of allowedFields) {
     if (jobData[key] !== undefined) {
       filteredData[key] = jobData[key];

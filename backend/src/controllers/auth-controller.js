@@ -31,20 +31,22 @@ export const loginUser = async(req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ message: "Missing required fields"});
+    return res.status(400).json({ message: "Email and password are required"});
   }
 
   try {
     const { token, user }  = await login({email, password});
 
     // option for secure cookie set to false for development only
-    res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
-    
+    res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', Path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 });
+    // console.log("Token from cookie:", req.cookies.token);
+    // console.log("Setting cookie with token:", token);
+    console.log('Set-Cookie header:', res.getHeader('Set-Cookie')); // <-- log the raw cookie header
     res.status(200).json({ message: `${user.username} Logged in successfully` });
     
-
+    
   } catch (error) {
-    console.log(error);
+    //console.log(error);
 
     return res.status(401).json({ message: "Invalid credentials"});
   }  

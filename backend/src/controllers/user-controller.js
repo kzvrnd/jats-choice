@@ -3,9 +3,14 @@ import { getCurrentUserInfo, updatedName } from '../services/user-service.js';
 import { User } from '../models/index.js';
 
 export const getMe = async (req, res) => {
+  console.log(`req.user.id: ${req.user.id}`);
+  console.log(`req.user.username: ${req.user.username}`);
+  console.log(`This is the me path`);
+
   try {
     const userId = req.user.id;
     const curUser = await getCurrentUserInfo(userId);
+    console.log(curUser);
 
     return res.status(200).json({ user: curUser });
   } catch (error) {
@@ -33,7 +38,7 @@ export const updateMe = async (req, res) => {
 
 //test or private routes
 
-export const allUsers = async (req, res) => {
+export const allUsers = async (req, res) => {  
   const user_list = await User.findAll();
 
   return res.status(200).json({ users: user_list });

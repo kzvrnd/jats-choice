@@ -8,7 +8,7 @@ const startServer = async () => {
   await connectDB();
 
   // Creates/updates tables
-  await sequelize.sync({ force: false }); 
+  await sequelize.sync({ force: false });  
   console.log('All Tables synced ✅');
 
   app.listen(PORT, () => {
