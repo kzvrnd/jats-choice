@@ -1,5 +1,5 @@
 import { Job } from "../models/index.js";
-
+import { Op } from "sequelize";
 
 export const createJob = async( userId, jobData ) => {
   const {title, company, location, description, status, employmentType, contact, salaryMin, salaryMax } = jobData;
@@ -65,6 +65,91 @@ export const update = async (userId, jobId, jobData) => {
 
   return job;
 } 
+
+
+
+export const getJobsFiltered = async (userId, filters) => {
+  const {
+    status,
+    search,
+    location,
+    employmentType,
+    salaryMin,
+    salaryMax,
+    page = 1,
+    limit = 10,
+    sortBy = "createdAt",
+    order = "DESC",
+  } = filters;
+  
+
+  const where = {
+    userId,
+  };
+
+  if (status) {
+    where.status = status;
+  }
+
+  if (search) {
+    where[Op.or] = [
+      { title: { [Op.like]: `%${search}%` } },
+      { company: { [Op.like]: `%${search}%` } },
+    ];
+  }
+
+  if (location) {
+    where.location = {
+      [Op.like]: `%${location}%`,
+    }
+  }
+
+  if ( employmentType ) {
+    where.employmentType = employmentType;
+  }
+
+  if (salaryMin || salaryMax) {
+    const min = salaryMin ? parseInt(salaryMin) : null;
+    const max = salaryMax ? parseInt(salaryMax) : null;
+
+    // If no where[Op.and] array exists, create one also prevents overwriting
+    if(!where[Op.and]) { 
+      where[Op.and] = [];
+    }
+
+    if (min) {
+      where[Op.and].push({ salaryMin: { [Op.gte]: min } });
+    }
+    if (max) {
+      where[Op.and].push({ salaryMax: { [Op.lte]: max } });
+    }
+  }
+
+
+  //pagination
+  const pageNumber = parseInt(page) || 1;
+  const pageSize = parseInt(limit) || 10;
+  const offset = (pageNumber - 1) * pageSize;
+
+  const { rows, count } = await Job.findAndCountAll({
+    where,
+    limit: pageSize,
+    offset,
+    order: [[sortBy, order]],
+  });
+
+  return { 
+    jobs: rows,
+    meta: {
+      totalJobs: count,
+      currentPage: pageNumber,
+      limit: pageSize,
+      totalPages: Math.ceil(count / pageSize)
+    }
+  }
+
+}
+
 
 
 /*

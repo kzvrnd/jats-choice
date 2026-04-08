@@ -50,3 +50,20 @@ export const updateJob = async (req, res) => {
     return res.status(400).json({ message: error.message});
   }
 }
+
+
+
+// new segment
+
+export const getNewJob = async (req, res) => {
+  const query = req.query;
+  const userID = req.user.id;
+  
+  try {
+    const result = await jobService.getJobsFiltered(userID, query);
+    res.status(200).json(result);
+  } catch (error) {
+    //console.log(error);
+    return res.status(500).json({ error: "Failed to fetch jobs"}); 
+  }
+}
