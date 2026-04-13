@@ -7,7 +7,7 @@ import { getNewJob } from '../controllers/job-controller.js';
 
 const router = express.Router();
 
-router.post('/createjob', authenticate, addJob); // user adds a job
+router.post('/createjob', authenticate, addJob); 
 router.get('/getjobs', authenticate, getJobs);
 router.delete('/:id', authenticate, deleteJob);
 router.patch('/:id', authenticate, updateJob);

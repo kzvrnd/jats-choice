@@ -38,3 +38,33 @@ export const signup = async({ username, email, password }) => {
 
 }
 
+export const updatedUserInfo = async (userId, updatedInfo) => { 
+  
+  const { username, email } = updatedInfo;
+
+  const user = await User.findByPk(userId);
+  if (!user) {
+    throw new Error('User not found.');
+  }
+
+  if (!username && !email) {
+    throw new Error ("No fields to update.");
+  }
+
+  const updates = {};
+
+  if (username) updates.username = username;
+
+  if (email) {
+    const existingUser = await User.findOne({where: { email } });
+    if (existingUser && existingUser.id !== userId) {
+      throw new Error('An account with this email already exists.');
+    }
+
+    updates.email = email;
+  }
+  
+  await user.update(updates);
+
+  return { id: user.id, username:user.username, email:user.email };
+}

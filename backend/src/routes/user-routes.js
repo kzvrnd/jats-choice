@@ -1,5 +1,5 @@
 import express from 'express'
-import { getUsers , getMe, updateMe } from '../controllers/user-controller.js'
+import { getUsers , getMe, updateUsername } from '../controllers/user-controller.js'
 import { authenticate } from '../middleware/auth-middleware.js';
 import { allUsers } from '../controllers/user-controller.js';
 
@@ -11,7 +11,7 @@ const router = express.Router();
 
 //test routes functionaity 
 router.get('/me', authenticate, getMe); 
-router.patch('/me', authenticate, updateMe);
+router.patch('/me', authenticate, updateUsername);
 router.get('/allusers', allUsers);
 router.get ('/', getUsers);
 
