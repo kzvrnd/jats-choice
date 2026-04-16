@@ -23,6 +23,9 @@ export const User = sequelize.define("User", {
   passwordHash: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true
+    }
   }
 });
 

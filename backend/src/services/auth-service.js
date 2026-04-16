@@ -68,3 +68,33 @@ export const updatedUserInfo = async (userId, updatedInfo) => {
 
   return { id: user.id, username:user.username, email:user.email };
 }
+
+export const changePassword = async(userId, oldPassword, newPassword) => {
+
+  const user = await User.findByPk(userId);
+  if (!user) {
+    throw new Error('User not found.');
+  }
+
+  if (!oldPassword || !newPassword) {
+    throw new Error('Missing required fields.');
+  }
+
+  if (oldPassword === newPassword) {
+    throw new Error('New password cannot be the same as the old password.');
+  }
+
+  const isPasswordValid = await bcrypt.compare(oldPassword, user.passwordHash);
+
+  if (!isPasswordValid) {
+    throw new Error('Invalid credentials.');
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+
+  await user.update({ passwordHash });
+
+  return { id: user.id, username:user.username, email:user.email };
+}
+
+

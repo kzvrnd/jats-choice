@@ -1,4 +1,4 @@
-import { signup, login, updatedUserInfo} from '../services/auth-service.js';
+import { signup, login, updatedUserInfo, changePassword} from '../services/auth-service.js';
 
 
 export const createUser = async(req, res) => {
@@ -68,6 +68,21 @@ export const updateUserInfo = async (req, res) => {
   } catch (error) {    
     return res.status(400).json({ message: "Error updating user"});
   }
+}
+
+export const updatePassword = async (req, res) => {
+  const userId = req.user.id;
+  const { password, newPassword } = req.body;
+
+  try {
+    const updatedUser = await changePassword(userId, password, newPassword);
+    return res.status(200).json({ message: "Password updated successfully", user: updatedUser });
+  } catch (error) {    
+    return res.status(401).json({ message: "Error updating password"});
+  }
+
+  // saftey check in case of unknown error
+  return res.status(500).json({ message: "Internal server error"});
 }
 
 

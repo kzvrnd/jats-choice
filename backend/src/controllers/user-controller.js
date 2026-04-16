@@ -45,12 +45,6 @@ export const allUsers = async (req, res) => {
   return res.status(200).json({ users: user_list });
 }
 
-export const updateUser = async (req, res) => {
-  
-
-  
-
-}
 
 //temporary for testing purposes
 export const getUsers = async(req, res) => {
