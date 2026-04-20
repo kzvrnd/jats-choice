@@ -1,8 +1,9 @@
 import { signup, login, updatedUserInfo, changePassword} from '../services/auth-service.js';
+import { matchedData } from 'express-validator';
 
 
 export const createUser = async(req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password } = matchedData(req);
 
   if (!username || !email || !password ) {
     return res.status(400).json({ message: "Missing required fields"});
@@ -28,7 +29,7 @@ export const createUser = async(req, res) => {
 } 
 
 export const loginUser = async(req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = matchedData(req);
 
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required"});
@@ -59,10 +60,11 @@ export const logoutUser = (req, res) => {
  
 
 export const updateUserInfo = async (req, res) => {
-  const userId = req.user.id; 
+  const userId = req.user.id;
+  const info = matchedData(req); 
 
   try {
-    const updatedUser = await updatedUserInfo(userId, req.body);
+    const updatedUser = await updatedUserInfo(userId, info);
     return res.status(200).json({ message: "User updated successfully", user: updatedUser });
 
   } catch (error) {    
@@ -72,7 +74,7 @@ export const updateUserInfo = async (req, res) => {
 
 export const updatePassword = async (req, res) => {
   const userId = req.user.id;
-  const { password, newPassword } = req.body;
+  const { password, newPassword } = matchedData(req);
 
   try {
     const updatedUser = await changePassword(userId, password, newPassword);

@@ -33,9 +33,7 @@ export const signup = async({ username, email, password }) => {
 
   const user = await User.create({username, email, passwordHash });
 
-
   return { id: user.id, username: user.username, email: user.email, createdAt: user.createdAt };
-
 }
 
 export const updatedUserInfo = async (userId, updatedInfo) => { 
@@ -72,6 +70,7 @@ export const updatedUserInfo = async (userId, updatedInfo) => {
 export const changePassword = async(userId, oldPassword, newPassword) => {
 
   const user = await User.findByPk(userId);
+  
   if (!user) {
     throw new Error('User not found.');
   }

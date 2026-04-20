@@ -14,7 +14,7 @@ export const authenticate = (req, res, next) => {
     req.user = decoded;    
     next();
   } catch (error) {
-    console.log('JWT error:', err);
+    console.log('JWT error:', error);
     return res.status(403).json({ message: 'Unauthorized' }); 
   }
 };
