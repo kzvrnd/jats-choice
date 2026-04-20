@@ -13,7 +13,7 @@ export const getCurrentUserInfo = async (userId) => {
 
 
 export const updatedName = async (userId, name) => {
-  //const user = await getCurrentUser(userId);
+  
   const user = await User.findByPk(userId);
 
     if (!user) {
@@ -22,6 +22,11 @@ export const updatedName = async (userId, name) => {
     throw error;
   }
 
+  if (user.username === name) {
+    const error = new Error("Cannot update to the same name");
+    error.statusCode = 400;
+    throw error;
+  }  
   
   await user.update({ username: name });
   

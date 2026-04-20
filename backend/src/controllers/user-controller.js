@@ -1,4 +1,5 @@
 import { getCurrentUserInfo, updatedName } from '../services/user-service.js';
+import { matchedData } from 'express-validator';
 
 import { User } from '../models/index.js';
 
@@ -23,7 +24,7 @@ export const getMe = async (req, res) => {
 export const updateUsername = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name } = req.body;
+    const { name } = matchedData(req);
 
     if (!name) {
     return res.status(400).json({ message: "Name is required" });
