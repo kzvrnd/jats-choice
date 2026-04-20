@@ -10,10 +10,10 @@ export const getMe = async (req, res) => {
 
   try {
     const userId = req.user.id;
-    const curUser = await getCurrentUserInfo(userId);
-    console.log(curUser);
+    const currentUser = await getCurrentUserInfo(userId);
+    console.log(currentUser);
 
-    return res.status(200).json({ user: curUser });
+    return res.status(200).json({ user: currentUser });
   } catch (error) {
     console.log(error);
     return res.status(401).json({ message: "Error retrieving user"});

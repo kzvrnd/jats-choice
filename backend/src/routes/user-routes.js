@@ -8,12 +8,11 @@ import { allUsers } from '../controllers/user-controller.js';
 const router = express.Router();
 
 //routes
-
+router.get('/me', authenticate, getMe); 
+router.patch('/me', authenticate, validateUpdateUsername, validateError, updateUsername);
 
 
 //test routes functionaity 
-router.get('/me', authenticate, getMe); 
-router.patch('/me', authenticate, validateUpdateUsername, validateError, updateUsername);
 router.get('/allusers', allUsers);
 router.get ('/', getUsers);
 
