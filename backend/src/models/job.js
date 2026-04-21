@@ -58,7 +58,7 @@ export const Job = sequelize.define("Job", {
       'offer'
     ),
     allowNull: true,
-    defaultValue: 'pending',
+    defaultValue: 'applied',
   },
   employmentType: {
     type: DataTypes.ENUM(

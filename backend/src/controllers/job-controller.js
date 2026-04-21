@@ -1,12 +1,15 @@
 import express from 'express';
+import { matchedData, param } from 'express-validator';
 
 import * as jobService from '../services/job-service.js';
 //import { createJob, getJobsByUser } from '../services/job-service.js';
 
-export const addJob = async (req, res) => {  
+export const addJob = async (req, res) => {
+  
+  const jobDetails = matchedData(req);
 
   try {
-    const job = await jobService.createJob(req.user.id, req.body);
+    const job = await jobService.createJob(req.user.id, jobDetails);
     return res.status(201).json({ message: "Job created successfully", job: job });
   } catch (error) {
     //console.log(error);
@@ -39,7 +42,8 @@ export const deleteJob = async (req, res) => {
 }  
 
 export const updateJob = async (req, res) => {
-  const jobId = req.params.id;
+  //const jobId = matchedData(req).id;
+  const { id: jobId } = matchedData(req);
   const userId = req.user.id;
 
   try {
@@ -56,7 +60,8 @@ export const updateJob = async (req, res) => {
 // new segment
 
 export const getNewJob = async (req, res) => {
-  const query = req.query;
+  
+  const query = matchedData(req, { location: ['query'] });
   const userID = req.user.id;
   
   try {
