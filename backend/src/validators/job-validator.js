@@ -20,16 +20,12 @@ const validEmploymentTypes = [
 
 export const createJobValidator = [
   body("title")
-    .exists().withMessage("Title is required")
-    .bail()
     .isString().withMessage("Title must be a string")
     .bail()
     .trim()
-    .notEmpty().withMessage("Title cannot be empty"),
+    .notEmpty().withMessage("Title cannot be empty"),     
 
   body("company")
-    .exists().withMessage("Company is required")
-    .bail()
     .isString().withMessage("Company must be a string")
     .bail()
     .trim()
@@ -37,7 +33,7 @@ export const createJobValidator = [
 
   body("description")
     .optional()
-    .isString().withMessage("Description must be a string")
+    .isString().withMessage("Description must be a string")    
     .trim(),
 
   body("location")
@@ -93,17 +89,18 @@ export const createJobValidator = [
 export const updateJobValidator = [
 
   param("id").exists().withMessage("Job ID is required")
-    .isNumeric().withMessage("Job ID must be a number"),
+    .isInt().withMessage("Job ID must be a number"),
 
   body("title")
     .optional()
-    .isString().withMessage("Title must be a string")
     .trim()
-    .notEmpty().withMessage("Title cannot be empty"),
+    .notEmpty().withMessage("Title cannot be empty")
+    .bail()
+    .isString().withMessage("Title must be a string"),
 
   body("company")
     .optional()
-    .isString().withMessage("Company must be a string")
+    .isString().withMessage("Company must be a string")    
     .trim()
     .notEmpty().withMessage("Company cannot be empty"),
 
@@ -170,17 +167,22 @@ export const jobQueryValidator = [
     .isIn(validEmploymentTypes)
     .withMessage("Invalid employment type"),
 
+  query("title")
+    .optional()
+    .isString()
+    .trim(),
+
   query("company")
     .optional()
     .isString()
-    .trim()
-    .notEmpty().withMessage("Company cannot be empty"),
+    .trim(),
+    //.notEmpty().withMessage("Company cannot be empty"),
 
   query("location")
     .optional()
     .isString()
-    .trim()
-    .notEmpty().withMessage("Location cannot be empty"),
+    .trim(),
+    //.notEmpty().withMessage("Location cannot be empty"),
 
   query("salaryMin")
     .optional()
@@ -230,7 +232,8 @@ export const jobQueryValidator = [
 
   query("order")
     .optional()    
-    .trim()    
+    .trim()
+    .toUpperCase()    
     .isIn(["ASC", "DESC"]).withMessage("order must be ASC or DESC"),
 
 ];
