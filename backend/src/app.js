@@ -5,6 +5,8 @@ import jobRoutes from './routes/job-routes.js';
 import 'dotenv/config.js';
 import cookieParser from 'cookie-parser';
 
+import errorHandler from './middleware/error-handler.js';
+
 
 const app = express();
 
@@ -21,7 +23,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 
 
-
+//error middleware must be last middleware
+app.use(errorHandler);
 
 
 
