@@ -2,10 +2,12 @@ import express from 'express'
 import userRoutes from './routes/user-routes.js';
 import authRoutes from './routes/auth-routes.js';
 import jobRoutes from './routes/job-routes.js';
+import { errorHandler } from './middleware/error-handler.js';
+
+
 import 'dotenv/config.js';
 import cookieParser from 'cookie-parser';
 
-import errorHandler from './middleware/error-handler.js';
 
 
 const app = express();

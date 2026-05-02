@@ -5,6 +5,6 @@ export const errorHandler = (err, req, res, next) => {
   //res.status(statusCode).json({ error: err.message || "Something went wrong" });
   const message = err.message || "Internal server error";
 
-  res.status(statusCode).json({ success: false, message: message });
+  res.status(statusCode).json({ success: false, message });
 
 }

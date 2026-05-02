@@ -2,7 +2,7 @@ import { signup, login, updatedUserInfo, changePassword} from '../services/auth-
 import { matchedData } from 'express-validator';
 
 
-export const createUser = async(req, res) => {
+export const createUser = async(req, res, next) => {
   const { username, email, password } = matchedData(req);
 
   if (!username || !email || !password ) {
@@ -21,9 +21,13 @@ export const createUser = async(req, res) => {
     });
 
   } catch (error) {
-    console.log(error);
+    //console.log(error);
 
-    res.status(400).json({ message: "Error creating user", error: error.message});
+    // pre error handler middleware
+    //res.status(400).json({ message: "Error creating user", error: error.message});
+
+    // post error handler middleware
+    next(error);
   }
 
 } 

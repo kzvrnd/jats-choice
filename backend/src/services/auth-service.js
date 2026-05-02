@@ -1,5 +1,6 @@
 import { User } from '../models/index.js';
 import { generateAccessToken } from '../utils/token.js';
+import { AppError } from '../utils/app-error.js';
 import bcrypt from 'bcrypt';
 
 
@@ -8,11 +9,11 @@ export const login = async({ email, password}) => {
   const user = await User.findOne({where: { email } });
 
   if (!user) {
-    throw new Error('Invalid credentials.');
+    throw new AppError('Invalid credentials.', 409);
   }  
   const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
   if (!isPasswordValid) {
-    throw new Error('Invalid credentials.');
+    throw new AppError('Invalid credentials.', 401);
   }
 
   const token = generateAccessToken(user);
