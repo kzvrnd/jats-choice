@@ -9,7 +9,7 @@ export const login = async({ email, password}) => {
   const user = await User.findOne({where: { email } });
 
   if (!user) {
-    throw new AppError('Invalid credentials.', 409);
+    throw new AppError('Invalid credentials.', 401);
   }  
   const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
   if (!isPasswordValid) {
@@ -27,7 +27,7 @@ export const signup = async({ username, email, password }) => {
   
   const existingUser = await User.findOne({where: { email } });
   if (existingUser) {
-    throw new Error('An account with this email already exists.');
+    throw new AppError('An account with this email already exists.', 409);
   }  
 
   const passwordHash = await bcrypt.hash(password, 10);

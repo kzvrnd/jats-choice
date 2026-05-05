@@ -21,8 +21,6 @@ export const createUser = async(req, res, next) => {
     });
 
   } catch (error) {
-    //console.log(error);
-
     // pre error handler middleware
     //res.status(400).json({ message: "Error creating user", error: error.message});
 
@@ -32,7 +30,7 @@ export const createUser = async(req, res, next) => {
 
 } 
 
-export const loginUser = async(req, res) => {
+export const loginUser = async(req, res, next) => {
   const { email, password } = matchedData(req);
 
   if (!email || !password) {
@@ -52,8 +50,8 @@ export const loginUser = async(req, res) => {
     
   } catch (error) {
     //console.log(error);
-
-    return res.status(401).json({ message: "Invalid credentials"});
+    next(error);
+    
   }  
 }
 

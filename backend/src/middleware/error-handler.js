@@ -1,10 +1,12 @@
 export const errorHandler = (err, req, res, next) => {
   console.error(err); 
 
-  const statusCode = err.statusCode || 500;
-  //res.status(statusCode).json({ error: err.message || "Something went wrong" });
-  const message = err.message || "Internal server error";
-
-  res.status(statusCode).json({ success: false, message });
+  //expected errors
+  if ((err.isOperational = true)) {
+    return res.status(err.statusCode).json({ success: false, message: err.message });
+  }  
+  
+  //unexpected errors
+  return res.status(500).json({ success: false, message: "Oops something went wrong" });
 
 }
