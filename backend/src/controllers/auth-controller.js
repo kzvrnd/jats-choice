@@ -61,7 +61,7 @@ export const logoutUser = (req, res) => {
 }
  
 
-export const updateUserInfo = async (req, res) => {
+export const updateUserInfo = async (req, res, next) => {
   const userId = req.user.id;
   const info = matchedData(req); 
 
@@ -70,11 +70,12 @@ export const updateUserInfo = async (req, res) => {
     return res.status(200).json({ message: "User updated successfully", user: updatedUser });
 
   } catch (error) {    
-    return res.status(400).json({ message: "Error updating user"});
+    //return res.status(400).json({ message: "Error updating user"});
+    next(error);
   }
 }
 
-export const updatePassword = async (req, res) => {
+export const updatePassword = async (req, res, next) => {
   const userId = req.user.id;
   const { password, newPassword } = matchedData(req);
 
@@ -82,7 +83,8 @@ export const updatePassword = async (req, res) => {
     const updatedUser = await changePassword(userId, password, newPassword);
     return res.status(200).json({ message: "Password updated successfully", user: updatedUser });
   } catch (error) {    
-    return res.status(401).json({ message: "Error updating password"});
+    //return res.status(401).json({ message: "Error updating password"});
+    next(error)
   }
 
   // saftey check in case of unknown error

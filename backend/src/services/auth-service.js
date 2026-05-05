@@ -43,11 +43,11 @@ export const updatedUserInfo = async (userId, updatedInfo) => {
 
   const user = await User.findByPk(userId);
   if (!user) {
-    throw new Error('User not found.');
+    throw new AppError('User not found.', 404);
   }
 
   if (!username && !email) {
-    throw new Error ("No fields to update.");
+    throw new AppError ("No fields to update.", 400);
   }
 
   const updates = {};
@@ -57,7 +57,7 @@ export const updatedUserInfo = async (userId, updatedInfo) => {
   if (email) {
     const existingUser = await User.findOne({where: { email } });
     if (existingUser && existingUser.id !== userId) {
-      throw new Error('An account with this email already exists.');
+      throw new AppError('An account with this email already exists.', 409);
     }
 
     updates.email = email;
@@ -73,21 +73,21 @@ export const changePassword = async(userId, oldPassword, newPassword) => {
   const user = await User.findByPk(userId);
   
   if (!user) {
-    throw new Error('User not found.');
+    throw new AppError('User not found.', 404);
   }
 
   if (!oldPassword || !newPassword) {
-    throw new Error('Missing required fields.');
+    throw new AppError('Missing required fields.', 400);
   }
 
   if (oldPassword === newPassword) {
-    throw new Error('New password cannot be the same as the old password.');
+    throw new AppError('New password cannot be the same as the old password.', 400);
   }
 
   const isPasswordValid = await bcrypt.compare(oldPassword, user.passwordHash);
 
   if (!isPasswordValid) {
-    throw new Error('Invalid credentials.');
+    throw new AppError('Invalid credentials.', 401);
   }
 
   const passwordHash = await bcrypt.hash(newPassword, 10);
