@@ -3,38 +3,42 @@ import { matchedData } from 'express-validator';
 
 import { User } from '../models/index.js';
 
-export const getMe = async (req, res) => {
+export const getMe = async (req, res, next) => {
   console.log(`req.user.id: ${req.user.id}`);
   console.log(`req.user.username: ${req.user.username}`);
   console.log(`This is the me path`);
 
+  const userId = req.user.id;
+  const currentUser = await getCurrentUserInfo(userId);
+
   try {
-    const userId = req.user.id;
-    const currentUser = await getCurrentUserInfo(userId);
     console.log(currentUser);
 
     return res.status(200).json({ user: currentUser });
   } catch (error) {
-    console.log(error);
-    return res.status(401).json({ message: "Error retrieving user"});
+    //console.log(error);
+    //return res.status(401).json({ message: "Error retrieving user"});
+    next(error);
   } 
 
 }
 
-export const updateUsername = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { name } = matchedData(req);
+export const updateUsername = async (req, res, next) => {
+  
+  const userId = req.user.id;
+  const { name } = matchedData(req);
+  
+  if (!name) {
+  return res.status(400).json({ message: "Name is required" });
+  }
 
-    if (!name) {
-    return res.status(400).json({ message: "Name is required" });
-    }
-
+  try {    
     const updatedUser = await updatedName(userId, name);    
 
     return res.status(200).json({ message: "Username updated successfully", user: updatedUser });
   } catch (error) {    
-    return res.status(500).json({ message: "Error updating user"});
+    //return res.status(500).json({ message: "Error updating user"});
+    next(error); 
   }  
 }
 

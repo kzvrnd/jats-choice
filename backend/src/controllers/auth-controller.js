@@ -86,11 +86,7 @@ export const updatePassword = async (req, res, next) => {
     //return res.status(401).json({ message: "Error updating password"});
     next(error)
   }
-
-  // saftey check in case of unknown error
-  return res.status(500).json({ message: "Internal server error"});
 }
-
 
 
 //test or private routes
