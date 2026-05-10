@@ -18,15 +18,12 @@ export const updatedName = async (userId, name) => {
   const user = await User.findByPk(userId);
 
     if (!user) {
-    const error = new AppError("User not found", 404);
-    error.statusCode = 404;
-    throw error;
+    throw new AppError("User not found", 404);  
   }
 
   if (user.username === name) {
-    const error = new AppError("Cannot update to the same name", 400);
-    error.statusCode = 400;
-    throw error;
+    throw new AppError("Cannot update to the same name", 400);   
+   
   }  
   
   await user.update({ username: name });

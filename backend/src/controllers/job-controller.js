@@ -2,7 +2,7 @@ import express from 'express';
 import { matchedData, param } from 'express-validator';
 
 import * as jobService from '../services/job-service.js';
-//import { createJob, getJobsByUser } from '../services/job-service.js';
+
 
 export const addJob = async (req, res) => {
   
