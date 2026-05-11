@@ -1,14 +1,14 @@
 import { Job } from "../models/index.js";
 import { Op } from "sequelize";
+import { AppError } from "../utils/app-error.js";
 
 export const createJob = async( userId, jobData ) => {
   const {title, company, location, description, status, employmentType, contact, salaryMin, salaryMax } = jobData;
 
   if (!title || !company) {
-    const error = new Error ('Title and company are required.');
-    error.statusCode = 400;
-    throw error;
-  } 
+    throw new AppError('Title and company are required.', 400);
+  }
+
   // While below works, not best since two DB calls
   // const user = await User.findByPk(req.user.id);
   // const job = await user.createJob({ title, company });
@@ -29,9 +29,7 @@ export const deleteJob = async (userId, jobId) => {
   const job = await Job.findOne({ where: { id: jobId, userId } });
   
   if (!job) {
-    const error = new Error ('Job not found.');
-    error.statusCode = 404;
-    throw error;
+    throw new AppError('Job not found.', 404);
   }
 
   await job.destroy();
@@ -41,9 +39,7 @@ export const update = async (userId, jobId, jobData) => {
   const job = await Job.findOne({ where: { id: jobId, userId } });
   
   if (!job) {
-    const error = new Error ('Job not found.');
-    error.statusCode = 404;
-    throw error;
+    throw new AppError('Job not found.', 404);
   }
 
   const allowedFields = [
@@ -82,6 +78,18 @@ export const getJobsFiltered = async (userId, filters) => {
     order = "DESC",
   } = filters;
   
+
+  if (page < 1) {
+    throw new AppError('Invalid page.', 400);
+  }
+  
+  if (limit > 100 || limit < 1) {
+  throw new AppError('Invalid limit.', 400);
+  }
+
+  if (order !== "ASC" && order !== "DESC") {
+    throw new AppError('Invalid order.', 400);
+  }
 
   const where = {
     userId,
