@@ -41,7 +41,7 @@ export const loginUser = async(req, res, next) => {
     const { token, user }  = await login({email, password});
 
     // option for secure cookie set to false for development only
-    res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', Path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 });
+    res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 });
     // console.log("Token from cookie:", req.cookies.token);
     // console.log("Setting cookie with token:", token);
     console.log('Set-Cookie header:', res.getHeader('Set-Cookie')); // <-- log the raw cookie header
