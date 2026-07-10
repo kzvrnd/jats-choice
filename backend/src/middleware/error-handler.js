@@ -2,7 +2,7 @@ export const errorHandler = (err, req, res, next) => {
   console.error(err); 
 
   //expected errors
-  if ((err.isOperational = true)) {
+  if ((err.isOperational)) {
     return res.status(err.statusCode).json({ success: false, message: err.message });
   }  
   
