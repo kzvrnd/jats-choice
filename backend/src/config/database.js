@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 
 
 // load env variables
-dotenv.config({ path: ".env.development" });
+//dotenv.config({ path: ".env.development" });
+dotenv.config({ path: process.env.NODE_ENV === "test" ? ".env.test" : ".env.development" });
 
 
 // export const sequelize = new Sequelize({
