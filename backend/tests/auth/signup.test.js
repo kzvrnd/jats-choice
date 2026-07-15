@@ -14,6 +14,7 @@ describe("POST /api/auth/signup", () => {
       });
 
 
+    console.log(response.body);
     expect(response.statusCode).toBe(201);
 
     expect(response.body.success).toBe(true);
@@ -155,5 +156,97 @@ describe("POST /api/auth/signup", () => {
       ])
     );
   });
+
+  test("returns a validation error if email is invalid", async () => {
+
+    const response = await request(app)
+      .post("/api/auth/signup")
+      .send({
+        username: "Test User",
+        email: "test@example",
+        password: "password123"
+      });
+
+
+    expect(response.statusCode).toBe(400);   
+
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "email", message: "Invalid email address" 
+        })
+      ])
+    );
+  });
+
+  test("returns a validation error if username is shorter than 3 characters", async () => {
+
+    const response = await request(app)
+      .post("/api/auth/signup")
+      .send({
+        username: "Te",
+        email: "test@example.com",
+        password: "password123"
+      });
+
+
+    expect(response.statusCode).toBe(400);   
+
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "username", message: "Username must be at least 3 characters long" 
+        })
+      ])
+    );
+  });
+
+  test("accepts a username with exactly 3 characters", async () => {
+
+    const response = await request(app)
+      .post("/api/auth/signup")
+      .send({
+        username: "Tes",
+        email: "test@example.com",
+        password: "password123"
+      });
+
+
+    expect(response.statusCode).toBe(201);
+    
+    expect(response.body.success).toBe(true);
+
+    expect(response.body.message).toBe("User created successfully");
+  });
+
+  test("returns an error if username contains only whitespace", async () => {  
+
+    const response = await request(app)
+      .post("/api/auth/signup")
+      .send({
+        username: "   ",
+        email: "test@example.com",
+        password: "password123"
+      });
+
+
+    expect(response.statusCode).toBe(400);   
+
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "username", message: "Username is required" 
+        })
+      ])
+    );
+  });
+
+  
 
 });
