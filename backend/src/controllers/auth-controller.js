@@ -44,7 +44,8 @@ export const loginUser = async(req, res, next) => {
     res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 });
     // console.log("Token from cookie:", req.cookies.token);
     // console.log("Setting cookie with token:", token);
-    console.log('Set-Cookie header:', res.getHeader('Set-Cookie')); // <-- log the raw cookie header
+    
+    //console.log('Set-Cookie header:', res.getHeader('Set-Cookie')); // <-- log the raw cookie header
     res.status(200).json({ message: `${user.username} Logged in successfully` });
     
     
