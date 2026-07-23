@@ -44,11 +44,13 @@ export const validateUpdate =  [
 
   body("username")
   .optional()
+  .isString().withMessage("Username must be a string")
   .trim()
   .notEmpty().withMessage("Username is required"),
 
   body("email")
   .optional()
+  .isString().withMessage("Email must be a string")
   .trim()
   .notEmpty().withMessage("Email is required")
   .isEmail().withMessage("Invalid email address")
