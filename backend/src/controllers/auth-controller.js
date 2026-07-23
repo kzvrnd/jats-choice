@@ -33,6 +33,7 @@ export const createUser = async(req, res, next) => {
 export const loginUser = async(req, res, next) => {
   const { email, password } = matchedData(req);
 
+  //fail safe in case email or password is missing and passes through validation
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required"});
   }
@@ -63,7 +64,7 @@ export const logoutUser = (req, res) => {
  
 
 export const updateUserInfo = async (req, res, next) => {
-  const userId = req.user.id;
+  const userId = req.user.id; 
   const info = matchedData(req); 
 
   try {

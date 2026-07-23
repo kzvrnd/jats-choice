@@ -1,5 +1,5 @@
 export const errorHandler = (err, req, res, next) => {
-  console.error(err); 
+  //console.error(err); 
 
   //expected errors
   if ((err.isOperational)) {
