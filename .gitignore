@@ -5,3 +5,4 @@ backend/users.json
 backend/database.sqlite
 *.sqlite
 *sqlite3
+.env.development

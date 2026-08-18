@@ -14,7 +14,7 @@ describe("POST /api/auth/signup", () => {
       });
 
 
-    console.log(response.body);
+    //console.log(response.body);
     expect(response.statusCode).toBe(201);
 
     expect(response.body.success).toBe(true);

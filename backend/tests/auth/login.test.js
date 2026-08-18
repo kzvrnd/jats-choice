@@ -28,13 +28,14 @@ describe("POST /api/auth/login", () => {
       });
 
 
-    console.log(response.body);
+    //console.log(response.body);
     expect(response.statusCode).toBe(200);    
 
     expect(response.body.message)
       .toBe("Login Test User Logged in successfully");
 
-    expect(response.headers["set-cookie"]).toBeDefined(); // test if login token is set
+    // test if login token is set
+    expect(response.headers["set-cookie"]).toBeDefined();
   });
 
   test("returns a validation error if email is empty", async () => {

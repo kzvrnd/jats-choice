@@ -195,7 +195,7 @@ describe ("PATCH /api/auth/update", () => {
         email: "duplicateemail@example.com"        
       });
 
-    console.log(response.body);
+    //console.log(response.body);
     expect(response.statusCode).toBe(409);
 
     expect(response.body.success).toBe(false);
