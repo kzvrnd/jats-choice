@@ -43,28 +43,36 @@ export const createJobValidator = [
 
   body("salaryMin")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMin must be a positive integer")
+    .isInt({ min: 0 }).withMessage("Minimum salary must be a positive integer")
     .toInt(),
 
   body("salaryMax")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMax must be a positive integer")
-    .toInt(),
+    .isInt({ min: 0 }).withMessage("Maximum salary must be a positive integer")
+    .toInt()
+    .custom((salaryMax, { req }) => {
+      const { salaryMin } = req.body;
+      if (salaryMin !== undefined && salaryMax !== undefined && Number(salaryMin) > Number(salaryMax)) {
+        throw new Error("Minimum salary must be less than or equal to maximum salary");
+      }
+      return true; 
+    }),
+
 
   // Salary range cross-field validation
-  body().custom((_, { req }) => {
-    const { salaryMin, salaryMax } = req.body;
+  // body("salaryMax").custom((_, { req }) => {
+  //   const { salaryMin, salaryMax } = req.body;
 
-    if (
-      salaryMin !== undefined &&
-      salaryMax !== undefined &&
-      Number(salaryMin) > Number(salaryMax)
-    ) {
-      throw new Error("salaryMin must be less than or equal to salaryMax");
-    }
+  //   if (
+  //     salaryMin !== undefined &&
+  //     salaryMax !== undefined &&
+  //     Number(salaryMin) > Number(salaryMax)
+  //   ) {
+  //     throw new Error("Minimum salary must be less than or equal to maximum salary");
+  //   }
 
-    return true;
-  }),
+  //   return true;
+  // }),
 
   body("contact")
     .optional()
@@ -116,27 +124,34 @@ export const updateJobValidator = [
 
   body("salaryMin")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMin must be a positive integer")
+    .isInt({ min: 0 }).withMessage("Minimum salary must be a positive integer")
     .toInt(),
 
   body("salaryMax")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMax must be a positive integer")
-    .toInt(),
+    .isInt({ min: 0 }).withMessage("Maximum salary must be a positive integer")
+    .toInt()
+    .custom((salaryMax, { req }) => {
+      const { salaryMin } = req.body;
+      if (salaryMin !== undefined && salaryMax !== undefined && Number(salaryMin) > Number(salaryMax)) {
+        throw new Error("Minimum salary must be less than or equal to maximum salary");
+      }
+      return true; 
+    }),
 
-  body().custom((_, { req }) => {
-    const { salaryMin, salaryMax } = req.body;
+  // body().custom((_, { req }) => {
+  //   const { salaryMin, salaryMax } = req.body;
 
-    if (
-      salaryMin !== undefined &&
-      salaryMax !== undefined &&
-      Number(salaryMin) > Number(salaryMax)
-    ) {
-      throw new Error("salaryMin must be <= salaryMax");
-    }
+  //   if (
+  //     salaryMin !== undefined &&
+  //     salaryMax !== undefined &&
+  //     Number(salaryMin) > Number(salaryMax)
+  //   ) {
+  //     throw new Error("salaryMin must be <= salaryMax");
+  //   }
 
-    return true;
-  }),
+  //   return true;
+  // }),
 
   body("contact")
     .optional()
@@ -192,22 +207,29 @@ export const jobQueryValidator = [
   query("salaryMax")
     .optional()
     .isInt({ min: 0 }).withMessage("salaryMax must be a positive integer")
-    .toInt(),
+    .toInt()
+    .custom((salaryMax, { req }) => {
+      const { salaryMin } = req.query;
+      if (salaryMin !== undefined && salaryMax !== undefined && salaryMin > salaryMax) {
+        throw new Error("Minimum salary must be less than or equal to maximum salary");
+      }
+      return true;
+    }),
 
   
-  query().custom((_, { req }) => {
-    const { salaryMin, salaryMax } = req.query;
+  // query().custom((_, { req }) => {
+  //   const { salaryMin, salaryMax } = req.query;
 
-    if (
-      salaryMin !== undefined &&
-      salaryMax !== undefined &&
-      Number(salaryMin) > Number(salaryMax)
-    ) {
-      throw new Error("salaryMin must be <= salaryMax");
-    }
+  //   if (
+  //     salaryMin !== undefined &&
+  //     salaryMax !== undefined &&
+  //     Number(salaryMin) > Number(salaryMax)
+  //   ) {
+  //     throw new Error("Minimum salary must be less than or equal to maximum salary");
+  //   }
 
-    return true;
-  }),
+  //   return true;
+  // }),
   
   query("page")
     .optional()
