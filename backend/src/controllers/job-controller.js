@@ -25,7 +25,7 @@ export const getJobs = async (req, res) => {
   
   try {
     const result = await jobService.getJobsFiltered(userId, query);
-    res.status(200).json(result);
+    res.status(200).json({ message: "Jobs fetched successfully", ...result});
   } catch (error) {
     //console.log(error);
     return res.status(500).json({ error: "Failed to fetch jobs"}); 
