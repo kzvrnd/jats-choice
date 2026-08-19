@@ -3,7 +3,7 @@ import app from "../../src/app.js";
 import { Job } from "../../src/models/job.js";
 import { User } from "../../src/models/user.js";
 
-describe("POST /api/jobs/createjob", () => {
+describe("POST /api/jobs/", () => {
   let jobTestUser;
   let token;
 
@@ -53,7 +53,7 @@ describe("POST /api/jobs/createjob", () => {
   test("creates a job successfully for an authenticated user", async () => {
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send(validJobData);
       
@@ -94,7 +94,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns an error if the user is not authenticated", async () => {
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .send(validJobData);        
 
 
@@ -106,7 +106,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns a validation error if title is empty", async () => {  
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...validJobData,
@@ -130,7 +130,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns a validation error if company is empty", async () => {  
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...validJobData,
@@ -154,7 +154,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns a validation error if description is not a string", async () => {
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...validJobData,
@@ -178,7 +178,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns a validation error if location is not a string", async () => {
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...validJobData,
@@ -202,7 +202,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns a validation error if contact is not a string", async () => { 
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...validJobData,
@@ -231,7 +231,7 @@ describe("POST /api/jobs/createjob", () => {
      const { status, ...jobWithoutStatus } = validJobData;
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...jobWithoutStatus
@@ -250,7 +250,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns a validation error if an invalid status is provided", async () => {
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...validJobData,
@@ -274,7 +274,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns a validation error if an invalid employment type is provided", async () => {
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...validJobData,
@@ -298,7 +298,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns a validation error is minimum salary is not a number", async () => {
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...validJobData,
@@ -322,7 +322,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns a validation error is minimum salary is not a postive integer", async () => {
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...validJobData,
@@ -346,7 +346,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns a validation error is maximum salary is not a number", async () => {  
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...validJobData,
@@ -370,7 +370,7 @@ describe("POST /api/jobs/createjob", () => {
   test("returns a validation error is maximum salary is not greater than minimum salary", async () => {
 
     const response = await request(app)
-      .post("/api/jobs/createjob")
+      .post("/api/jobs/")
       .set("Cookie", token)
       .send({
         ...validJobData,
@@ -393,3 +393,88 @@ describe("POST /api/jobs/createjob", () => {
   });
 
 })
+
+describe("GET /api/jobs/", () => {
+
+  let jobTestUser;
+  let token;
+
+  jobTestUser = {
+    username: "Job Test User",
+    email: "jobtest@example.com",
+    password: "password123"
+  }
+  
+  const validJobData = {
+    title: "Job Title",
+    company: "Job Company",
+    description: "Job Description",
+    location: "Job Location",
+    salaryMin: 1000,
+    salaryMax: 10000,
+    contact: "Job Contact",
+    status: "applied",  
+    employmentType: "full-time"
+
+  }
+
+  beforeEach(async () => {
+
+    await request(app)
+      .post("/api/auth/signup")
+      .send(jobTestUser);
+
+    const loginResponse = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: jobTestUser.email,
+        password: jobTestUser.password
+      });
+
+    token = loginResponse.headers["set-cookie"]; 
+
+    const user = await User.findOne({ where: { email: jobTestUser.email }});
+
+    jobTestUserId = user.id;
+  });
+
+  test("returns a list of jobs", async () => {
+
+    await request(app)
+      .post("/api/jobs/")
+      .set("Cookie", token)
+      .send(validJobData);
+
+    await request(app)
+      .post("/api/jobs/")
+      .set("Cookie", token)
+      .send({...validJobData,
+        title: "Job Title 2",
+        company: "Job Company 2",
+      });
+
+    const response = await request(app)
+      .get("/api/jobs/")
+      .set("Cookie", token);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe("Jobs fetched successfully");
+    expect(response.body.jobs).toHaveLength(2);
+
+    expect(response.body.jobs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          title: "Job Title",
+          company: "Job Company"   
+        }),
+
+        expect.objectContaining({
+          title: "Job Title 2",
+          company: "Job Company 2"   
+        })
+      ])
+    );
+
+  });
+
+});
