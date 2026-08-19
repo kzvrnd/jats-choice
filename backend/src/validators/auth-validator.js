@@ -53,6 +53,7 @@ export const validateUpdate =  [
   .isString().withMessage("Email must be a string")
   .trim()
   .notEmpty().withMessage("Email is required")
+  .bail()
   .isEmail().withMessage("Invalid email address")
   .normalizeEmail(),
   

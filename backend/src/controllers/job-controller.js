@@ -19,12 +19,16 @@ export const addJob = async (req, res) => {
 
 
 export const getJobs = async (req, res) => {
+  
+  const query = matchedData(req, { location: ['query'] });
+  const userId = req.user.id;
+  
   try {
-    const jobs = await jobService.getJobsByUser(req.user.id);
-    return res.status(200).json({ jobs: jobs });
+    const result = await jobService.getJobsFiltered(userId, query);
+    res.status(200).json(result);
   } catch (error) {
     //console.log(error);
-    return res.status(400).json({ message: error.message});
+    return res.status(500).json({ error: "Failed to fetch jobs"}); 
   }
 }
 
@@ -60,15 +64,12 @@ export const updateJob = async (req, res) => {
 // new segment
 
 export const getNewJob = async (req, res) => {
-  
-  const query = matchedData(req, { location: ['query'] });
-  const userID = req.user.id;
-  
+
   try {
-    const result = await jobService.getJobsFiltered(userID, query);
-    res.status(200).json(result);
+    const jobs = await jobService.getJobsByUser(req.user.id);
+    return res.status(200).json({ jobs: jobs });
   } catch (error) {
     //console.log(error);
-    return res.status(500).json({ error: "Failed to fetch jobs"}); 
+    return res.status(400).json({ message: error.message});
   }
 }

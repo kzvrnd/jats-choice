@@ -11,12 +11,16 @@ import { getNewJob } from '../controllers/job-controller.js';
 const router = express.Router();
 
 router.post('/createjob', authenticate, createJobValidator, validateRequest, addJob); 
-router.get('/getjobs', authenticate, getJobs);
+// router.get('/getjobs', authenticate, getJobs);
+router.get('/jobs', authenticate, jobQueryValidator, validateRequest, getJobs);
 router.delete('/:id', authenticate, deleteJob);
 router.patch('/:id', authenticate, updateJobValidator, validateRequest, updateJob);
 
 //New endpoint testing
-router.get('/getnewjobs', authenticate, jobQueryValidator, validateRequest, getNewJob);
+//router.get('/getnewjobs', authenticate, jobQueryValidator, validateRequest, getNewJob);
 
+
+//router.get('/getnewjobs', authenticate, jobQueryValidator, validateRequest, getNewJob);
+router.get('/getjobs', authenticate, getNewJob);
 
 export default router

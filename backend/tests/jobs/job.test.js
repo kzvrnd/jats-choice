@@ -55,13 +55,19 @@ describe("POST /api/jobs/createjob", () => {
     const response = await request(app)
       .post("/api/jobs/createjob")
       .set("Cookie", token)
-      .send(validJobData);        
+      .send(validJobData);
+      
+    const job = await Job.findOne({ where: { title: validJobData.title,
+      company: validJobData.company,
+      userId: jobTestUserId
+     }
+    });
 
 
     expect(response.statusCode).toBe(201);   
 
     expect(response.body.message).toBe("Job created successfully");
-    //console.log(response.body.job);
+    
 
     expect(response.body.job).toEqual(
       expect.objectContaining({
@@ -78,7 +84,10 @@ describe("POST /api/jobs/createjob", () => {
     );
 
     // check that the job was created for the correct user
-    expect(response.body.job.id).toBe(jobTestUserId);
+    expect(response.body.job.userId).toBe(jobTestUserId);
+
+    // check that the job was created in the database
+    expect(job).not.toBeNull();
     
   });
 
