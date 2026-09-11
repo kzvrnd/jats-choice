@@ -108,7 +108,7 @@ export const getJobsFiltered = async (userId, filters) => {
 
   if (location) {
     where.location = {
-      [Op.ilike]: `%${location}%`,
+      [Op.iLike]: `%${location}%`,
     }
   }
 

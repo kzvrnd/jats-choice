@@ -233,7 +233,7 @@ export const jobQueryValidator = [
   
   query("page")
     .optional()
-    .isInt({ min: 1 }).withMessage("page must be >= 1")
+    .isInt({ min: 1 }).withMessage("page must be greater than 0")
     .toInt(),
 
   query("limit")
