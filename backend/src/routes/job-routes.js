@@ -10,8 +10,7 @@ import { getNewJob } from '../controllers/job-controller.js';
 // /api/jobs
 const router = express.Router();
 
-router.post('/', authenticate, createJobValidator, validateRequest, addJob); 
-// router.get('/getjobs', authenticate, getJobs);
+router.post('/', authenticate, createJobValidator, validateRequest, addJob);
 router.get('/', authenticate, jobQueryValidator, validateRequest, getJobs);
 router.delete('/:id', authenticate, deleteJob);
 router.patch('/:id', authenticate, updateJobValidator, validateRequest, updateJob);
