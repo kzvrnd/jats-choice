@@ -6,6 +6,7 @@ import { User } from "../../src/models/user.js";
 describe("POST /api/jobs/", () => {
   let jobTestUser;
   let token;
+  let jobTestUserId; 
 
   jobTestUser = {
     username: "Job Test User",
@@ -769,23 +770,117 @@ describe("GET /api/jobs/", () => {
   });
 
 
-  // test("returns a validation error if search is greather than 50 characters", async () => {    
+  test("returns a validation error if search is greather than 50 characters", async () => {    
 
-  //   const repeater = "a".repeat(51);
-  //   const response = await request(app)
-  //     .get(`/api/jobs?search=${repeater}`)
-  //     .set("Cookie", token);    
+    const repeater = "a".repeat(51);
+    const response = await request(app)
+      .get(`/api/jobs?search=${repeater}`)
+      .set("Cookie", token);    
 
-  //   expect(response.statusCode).toBe(400);   
-  //   expect(response.body.message).toBe("Validation failed");    
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
 
-  //   expect(response.body.errors).toEqual(
-  //     expect.arrayContaining([
-  //       expect.objectContaining({
-  //          field: "search", message: "Search cannot be longer than 50 characters" 
-  //       })
-  //     ])
-  //   );    
-  // });
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "search", message: "Search cannot be longer than 50 characters" 
+        })
+      ])
+    );    
+  });
 
+  //console.log(repeater.length);
+  //console.log(`/api/jobs?search=${repeater}`);
+
+
+});
+
+describe("PATCH /api/jobs/:id", () => { 
+  let jobTestUser;
+  let token;
+  let jobTestUserId;
+  let jobId;
+
+  jobTestUser = {
+    username: "Job Test User",
+    email: "jobtest@example.com",
+    password: "password123"
+  }
+  
+  const validJobData = {
+    title: "Job Title",
+    company: "Job Company",
+    description: "Job Description",
+    location: "Job Location",
+    salaryMin: 1000,
+    salaryMax: 10000,
+    contact: "Job Contact",
+    status: "applied",  
+    employmentType: "full-time"
+
+  }
+
+  beforeEach(async () => {
+
+    await request(app)
+      .post("/api/auth/signup")
+      .send(jobTestUser);
+
+    const loginResponse = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: jobTestUser.email,
+        password: jobTestUser.password
+      });
+
+    token = loginResponse.headers["set-cookie"]; 
+
+    const user = await User.findOne({ where: { email: jobTestUser.email }});
+
+    jobTestUserId = user.id;
+
+    const jobResponse = await request(app)
+      .post("/api/jobs/")
+      .set("Cookie", token)
+      .send(validJobData);
+
+    jobId = jobResponse.body.job.id;
+  });
+  
+  test("updates a job successfully", async () => {  
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ status: "interview" });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe("Job updated successfully");
+    expect(response.body.job.status).toBe("interview");
+  });
+
+  test("User can only update their own job", async () => { 
+    
+    const secondUser = {...jobTestUser, email: "jobtest2@example.com"};
+    await request(app)
+      .post("/api/auth/signup")
+      .send(secondUser);
+
+    const loginResponse = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: secondUser.email,
+        password: secondUser.password
+      });
+
+    token = loginResponse.headers["set-cookie"]; 
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ status: "interview" });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe("Job not found.");
+  });
 });

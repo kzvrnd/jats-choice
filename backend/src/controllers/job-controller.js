@@ -49,7 +49,7 @@ export const deleteJob = async (req, res) => {
   }
 }  
 
-export const updateJob = async (req, res) => {
+export const updateJob = async (req, res, next) => {
   //const jobId = matchedData(req).id;
   const { id: jobId } = matchedData(req);
   const userId = req.user.id;
@@ -59,7 +59,8 @@ export const updateJob = async (req, res) => {
     return res.status(200).json({ message: "Job updated successfully", job: job });
   } catch (error) {
     //console.log(error);
-    return res.status(400).json({ message: error.message});
+    //return res.status(400).json({ message: error.message});
+    next(error);
   }
 }
 
