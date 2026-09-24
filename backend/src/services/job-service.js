@@ -13,7 +13,7 @@ export const createJob = async( userId, jobData ) => {
   // const user = await User.findByPk(req.user.id);
   // const job = await user.createJob({ title, company });
 
-  // Both of these are valid returns, but just returning the promise seems to be more preferred and no await.
+  // Both of these are valid returns, but just returning the promise seems to be more preferred and no await Q-in.
   return await Job.create({ title, company, location, description, status, employmentType, contact, salaryMin, salaryMax, userId });
   //return Jobs.create({ title, company, userId });
   
@@ -116,7 +116,7 @@ export const getJobsFiltered = async (userId, filters) => {
     where.employmentType = employmentType;
   }
 
-  if (salaryMin || salaryMax) {
+  if (salaryMin !== undefined || salaryMax !== undefined) {
     const min = salaryMin ? parseInt(salaryMin) : null;
     const max = salaryMax ? parseInt(salaryMax) : null;
 
@@ -125,7 +125,7 @@ export const getJobsFiltered = async (userId, filters) => {
       where[Op.and] = [];
     }
 
-    if (min) {
+    if (min !== null) {
       where[Op.and].push({ salaryMin: { [Op.gte]: min } });
     }
     if (max) {
