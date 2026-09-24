@@ -1,6 +1,6 @@
 import express from 'express';
 import { addJob, getJobs, deleteJob, updateJob } from '../controllers/job-controller.js';
-import { createJobValidator, updateJobValidator, jobQueryValidator } from '../validators/job-validator.js';
+import { createJobValidator, updateJobValidator, jobQueryValidator, jobIdValidator } from '../validators/job-validator.js';
 import { validateRequest } from '../middleware/validate.js';
 import { authenticate } from '../middleware/auth-middleware.js';
 
@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.post('/', authenticate, createJobValidator, validateRequest, addJob);
 router.get('/', authenticate, jobQueryValidator, validateRequest, getJobs);
-router.delete('/:id', authenticate, deleteJob);
+router.delete('/:id', authenticate,jobIdValidator, validateRequest, deleteJob);
 router.patch('/:id', authenticate, updateJobValidator, validateRequest, updateJob);
 
 //New endpoint testing
