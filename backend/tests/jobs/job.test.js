@@ -226,7 +226,7 @@ describe("POST /api/jobs/", () => {
 
 
 
-  test("a succesful job creation with status omitted", async () => {
+  test("a successful job creation with status omitted", async () => {
 
     
      const { status, ...jobWithoutStatus } = validJobData;
@@ -296,7 +296,7 @@ describe("POST /api/jobs/", () => {
     );
   });
 
-  test("returns a validation error is minimum salary is not a number", async () => {
+  test("returns a validation error if minimum salary is not a number", async () => {
 
     const response = await request(app)
       .post("/api/jobs/")
@@ -320,7 +320,7 @@ describe("POST /api/jobs/", () => {
     );
   });
 
-  test("returns a validation error is minimum salary is not a postive integer", async () => {
+  test("returns a validation error is minimum salary is not a positive integer", async () => {
 
     const response = await request(app)
       .post("/api/jobs/")
@@ -399,6 +399,7 @@ describe("GET /api/jobs/", () => {
 
   let jobTestUser;
   let token;
+  let jobTestUserId;
 
   jobTestUser = {
     username: "Job Test User",
@@ -770,7 +771,7 @@ describe("GET /api/jobs/", () => {
   });
 
 
-  test("returns a validation error if search is greather than 50 characters", async () => {    
+  test("returns a validation error if search is greater than 50 characters", async () => {    
 
     const repeater = "a".repeat(51);
     const response = await request(app)
