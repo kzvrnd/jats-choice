@@ -1,5 +1,4 @@
-export const errorHandler = (err, req, res, next) => {
-  //console.error(err); 
+export const errorHandler = (err, req, res, next) => { 
 
   //expected errors
   if ((err.isOperational)) {
@@ -7,6 +6,7 @@ export const errorHandler = (err, req, res, next) => {
   }  
   
   //unexpected errors
+  console.error(err);
   return res.status(500).json({ success: false, message: "Oops something went wrong" });
 
 }
