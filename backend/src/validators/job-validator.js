@@ -97,7 +97,7 @@ export const createJobValidator = [
 export const updateJobValidator = [
 
   param("id").exists().withMessage("Job ID is required")
-    .isInt({ min: 1 }).withMessage("Job ID must be a number")
+    .isInt({ min: 1 }).withMessage("Job ID must be a positive number")
     .toInt(),
 
   body("title")

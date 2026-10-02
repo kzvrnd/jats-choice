@@ -853,11 +853,14 @@ describe("PATCH /api/jobs/:id", () => {
     const response = await request(app)
       .patch(`/api/jobs/${jobId}`)
       .set("Cookie", token)
-      .send({ status: "interview" });
-
+      .send({ status: "interview" });      
+      
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe("Job updated successfully");
     expect(response.body.job.status).toBe("interview");
+      
+    const updatedJob = await Job.findOne({ where: { id: jobId }});
+    expect(updatedJob.status).toBe("interview");
   });
 
   test("User can only update their own job", async () => { 
@@ -874,14 +877,77 @@ describe("PATCH /api/jobs/:id", () => {
         password: secondUser.password
       });
 
-    token = loginResponse.headers["set-cookie"]; 
+    
+    const secondUserToken = loginResponse.headers["set-cookie"]; 
 
     const response = await request(app)
       .patch(`/api/jobs/${jobId}`)
-      .set("Cookie", token)
+      .set("Cookie", secondUserToken)
       .send({ status: "interview" });
 
     expect(response.statusCode).toBe(404);
     expect(response.body.message).toBe("Job not found.");
+
+    // Check that the job was not updated for the first user.
+    const firstUserJob = await Job.findOne({ where: { id: jobId }});
+    expect(firstUserJob.status).toBe("applied");
+    
+  });
+
+  test("returns a validation error if an invalid status is provided", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ status: "invalid" });
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "status", message: "Invalid status" 
+        })
+      ])
+    );
+  });
+
+  test("returns a validation error if jobId is not a number", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/a`)
+      .set("Cookie", token)
+      .send({ status: "interview" });
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "id", message: "Job ID must be a positive number" 
+        })
+      ])
+    );
+  });
+
+  test("returns a validation error if jobId is a negative number", async () => {  
+
+    const response = await request(app)
+      .patch(`/api/jobs/-1`)
+      .set("Cookie", token)
+      .send({ status: "interview" });    
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "id", message: "Job ID must be a positive number" 
+        })
+      ])
+    );
   });
 });
