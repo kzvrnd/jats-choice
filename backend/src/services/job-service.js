@@ -42,6 +42,14 @@ export const update = async (userId, jobId, jobData) => {
     throw new AppError('Job not found.', 404);
   }
 
+  // Service layer check to validate potential error when only one of salaryMin or salaryMax is updated
+  const newSalaryMin = jobData.salaryMin !== undefined ? jobData.salaryMin : job.salaryMin;
+  const newSalaryMax = jobData.salaryMax !== undefined ? jobData.salaryMax : job.salaryMax;  
+  
+  if (newSalaryMin > newSalaryMax) {
+    throw new AppError('Minimum salary cannot be greater than maximum salary.', 400);
+  }
+
   const allowedFields = [
     "title", "company", "location",
     "description", "status", "employmentType",
