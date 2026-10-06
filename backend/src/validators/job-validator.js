@@ -43,12 +43,12 @@ export const createJobValidator = [
 
   body("salaryMin")
     .optional()
-    .isInt({ min: 0 }).withMessage("Minimum salary must be a positive integer")
+    .isInt({ min: 0 }).withMessage("Minimum salary must be 0 or greater")
     .toInt(),
 
   body("salaryMax")
     .optional()
-    .isInt({ min: 0 }).withMessage("Maximum salary must be a positive integer")
+    .isInt({ min: 0 }).withMessage("Maximum salary must be 0 or greater")
     .toInt()
     .custom((salaryMax, { req }) => {
       const { salaryMin } = req.body;
@@ -102,14 +102,15 @@ export const updateJobValidator = [
 
   body("title")
     .optional()
-    .trim()
-    .notEmpty().withMessage("Title cannot be empty")
+    .isString().withMessage("Title must be a string")
     .bail()
-    .isString().withMessage("Title must be a string"),
+    .trim()
+    .notEmpty().withMessage("Title cannot be empty"),
 
   body("company")
     .optional()
-    .isString().withMessage("Company must be a string")    
+    .isString().withMessage("Company must be a string")
+    .bail()    
     .trim()
     .notEmpty().withMessage("Company cannot be empty"),
 
@@ -125,12 +126,12 @@ export const updateJobValidator = [
 
   body("salaryMin")
     .optional()
-    .isInt({ min: 0 }).withMessage("Minimum salary must be a positive integer")
+    .isInt({ min: 0 }).withMessage("Minimum salary must be 0 or greater")
     .toInt(),
 
   body("salaryMax")
     .optional()
-    .isInt({ min: 0 }).withMessage("Maximum salary must be a positive integer")
+    .isInt({ min: 0 }).withMessage("Maximum salary must be 0 or greater")
     .toInt()
     .custom((salaryMax, { req }) => {
       const { salaryMin } = req.body;
@@ -202,12 +203,12 @@ export const jobQueryValidator = [
 
   query("salaryMin")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMin must be a positive integer")
+    .isInt({ min: 0 }).withMessage("salaryMin must be 0 or greater")
     .toInt(),
 
   query("salaryMax")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMax must be a positive integer")
+    .isInt({ min: 0 }).withMessage("salaryMax must 0 or greater")
     .toInt()
     .custom((salaryMax, { req }) => {
       const { salaryMin } = req.query;

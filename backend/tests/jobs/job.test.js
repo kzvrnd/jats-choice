@@ -314,13 +314,13 @@ describe("POST /api/jobs/", () => {
     expect(response.body.errors).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-           field: "salaryMin", message: "Minimum salary must be a positive integer" 
+           field: "salaryMin", message: "Minimum salary must be 0 or greater" 
         })
       ])
     );
   });
 
-  test("returns a validation error is minimum salary is not a positive integer", async () => {
+  test("returns a validation error is minimum salary is less than zero", async () => {
 
     const response = await request(app)
       .post("/api/jobs/")
@@ -338,7 +338,7 @@ describe("POST /api/jobs/", () => {
     expect(response.body.errors).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-           field: "salaryMin", message: "Minimum salary must be a positive integer" 
+           field: "salaryMin", message: "Minimum salary must be 0 or greater" 
         })
       ])
     );
@@ -362,7 +362,7 @@ describe("POST /api/jobs/", () => {
     expect(response.body.errors).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-           field: "salaryMax", message: "Maximum salary must be a positive integer" 
+           field: "salaryMax", message: "Maximum salary must be 0 or greater" 
         })
       ])
     );
@@ -391,6 +391,57 @@ describe("POST /api/jobs/", () => {
         })
       ])
     );   
+  });
+
+  test("returns a validation error is maximum salary is less than zero", async () => {
+
+    const response = await request(app)
+      .post("/api/jobs/")
+      .set("Cookie", token)
+      .send({
+        ...validJobData,
+        salaryMax: -1
+      });        
+
+
+    expect(response.statusCode).toBe(400);   
+
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "salaryMax", message: "Maximum salary must be 0 or greater" 
+        })
+      ])
+    );
+  });
+
+  test("A success request when salarymin and salarymax are equal", async () => {
+
+    const response = await request(app)
+      .post("/api/jobs/")
+      .set("Cookie", token)
+      .send({
+        ...validJobData,
+        salaryMax: 1000,
+        salaryMin: 1000
+      });        
+
+
+    expect(response.statusCode).toBe(201);
+    expect(response.body.message).toBe("Job created successfully");
+    expect(response.body.job).toEqual(expect.objectContaining({
+        title: validJobData.title,
+        company: validJobData.company,
+        location: validJobData.location,
+        description: validJobData.description,
+        status: validJobData.status,
+        employmentType: validJobData.employmentType,
+        contact: validJobData.contact,
+        salaryMin: 1000,
+        salaryMax: 1000
+    }));
   });
 
 })
@@ -913,6 +964,25 @@ describe("PATCH /api/jobs/:id", () => {
     );
   });
 
+  test("returns a validation error if an invalid employment type is provided", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ employmentType: "invalid" });
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "employmentType", message: "Invalid employment type" 
+        })
+      ])
+    );
+  });
+
   test("returns a validation error if jobId is not a number", async () => {
 
     const response = await request(app)
@@ -950,4 +1020,381 @@ describe("PATCH /api/jobs/:id", () => {
       ])
     );
   });
+
+  test("returns a validation error if jobId is 0", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/0`)
+      .set("Cookie", token)
+      .send({ status: "interview" });
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "id", message: "Job ID must be a positive number" 
+        })
+      ])
+    );
+  });
+
+  test("returns an error if the jobId does not exist", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId + 1}`)
+      .set("Cookie", token)
+      .send({ status: "interview" });
+
+    expect(response.statusCode).toBe(404);   
+    expect(response.body.message).toBe("Job not found.");
+  });
+
+  test("returns an error if the user is not authenticated", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .send({ status: "interview" });
+
+    expect(response.statusCode).toBe(401);   
+    expect(response.body.message).toBe("Unauthorized: No token detected");
+  });
+
+  test("returns a validation error if title is not a string", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ title: 123 });
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "title", message: "Title must be a string"
+        })
+      ])
+    );
+  })
+
+  test("returns a validation error if title is empty whitespace", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ title: "   " });
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "title", message: "Title cannot be empty"
+        })
+      ])
+    );
+  });
+
+  test("returns a validation error if company is not a string", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ company: 123 });
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "company", message: "Company must be a string"
+        })
+      ])
+    );
+  })
+
+  test("returns a validation error if company is empty whitespace", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ company: "   " });
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "company", message: "Company cannot be empty"
+        })
+      ])
+    );
+  });
+
+  test("returns a validation error if description is not a string", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ description: 123 });
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "description", message: "Description must be a string"
+        })
+      ])
+    );
+  });
+
+  test("returns a validation error if location is not a string", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ location: 123 });
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "location", message: "Location must be a string"
+        })
+      ])
+    );
+  });
+
+  test("returns a validation error if contact is not a string", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ contact: 123 });
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "contact", message: "Contact must be a string"
+        })
+      ])
+    );
+  });
+
+  test("returns an error if minimum salary is attempting to be updated to a value greater than maximum salary", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ salaryMin: 20000}); 
+
+    const job = await Job.findByPk(jobId);    
+    
+    expect(response.statusCode).toBe(400);       
+
+    expect(response.body.message).toBe("Minimum salary cannot be greater than maximum salary.");
+
+    expect(job.salaryMin).toBe(validJobData.salaryMin);
+    expect(job.salaryMax).toBe(validJobData.salaryMax);
+
+  });
+
+  test("returns a validation error if minimum salary is not a number", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ salaryMin: "abc"}); 
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "salaryMin", message: "Minimum salary must be 0 or greater"
+        })
+      ])
+    );
+  });
+
+  test("returns a validation error if minimum salary less than zero", async () => {
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({ salaryMin: -1}); 
+
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("Validation failed");    
+
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+           field: "salaryMin", message: "Minimum salary must be 0 or greater"
+        })
+      ])
+    );
+  });
+
+  test("returns a success and updates the job when sending multiple fields", async () => { 
+
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({
+        title: "Jr. Software Developer",
+        company: "Your Fantasic Company",
+        description: "Great atmosphere, great professionalism",
+        location: "Los Angeles",
+        salaryMin: 65000,
+        salaryMax: 105000
+      }); 
+
+    const job = await Job.findByPk(jobId);
+
+    expect(response.statusCode).toBe(200);
+
+    expect(job.title).toBe("Jr. Software Developer");
+    expect(job.company).toBe("Your Fantasic Company");
+    expect(job.description).toBe("Great atmosphere, great professionalism");
+    expect(job.location).toBe("Los Angeles");
+    expect(job.salaryMin).toBe(65000);
+    expect(job.salaryMax).toBe(105000);
+
+  });
+
+  
+
+
+
+
+});
+
+describe("DELETE /api/jobs/:id", () => {
+
+  let jobTestUser;
+  let token;
+  let jobTestUserId;
+  let jobId;
+
+  jobTestUser = {
+    username: "Delete Job Test User",
+    email: "jobtest@example.com",
+    password: "password123"
+  }
+  
+  const validJobData = {
+    title: "Job Title",
+    company: "Job Company",
+    description: "Job Description",
+    location: "Job Location",
+    salaryMin: 1000,
+    salaryMax: 10000,
+    contact: "Job Contact",
+    status: "applied",  
+    employmentType: "full-time"
+
+  }
+
+  beforeEach(async () => {
+
+    await request(app)
+      .post("/api/auth/signup")
+      .send(jobTestUser);
+
+    const loginResponse = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: jobTestUser.email,
+        password: jobTestUser.password
+      });
+
+    token = loginResponse.headers["set-cookie"]; 
+
+    const user = await User.findOne({ where: { email: jobTestUser.email }});
+
+    jobTestUserId = user.id;
+
+    const jobResponse = await request(app)
+      .post("/api/jobs/")
+      .set("Cookie", token)
+      .send(validJobData);
+
+    jobId = jobResponse.body.job.id;
+  });
+
+  test("deletes a job successfully", async () => {
+    const response = await request(app)
+      .delete(`/api/jobs/${jobId}`)
+      .set("Cookie", token);
+
+    expect(response.statusCode).toBe(204);
+
+    const deletedJob = await Job.findByPk(jobId);
+
+    expect(deletedJob).toBeNull();    
+  });
+
+  test("User can only delete their own job", async () => { 
+    
+    const secondUser = {...jobTestUser, email: "jobtest2@example.com"};
+    await request(app)
+      .post("/api/auth/signup")
+      .send(secondUser);
+
+    const loginResponse = await request(app)
+      .post("/api/auth/login")
+      .send({
+        email: secondUser.email,
+        password: secondUser.password
+      });
+
+    let secondUsertoken = loginResponse.headers["set-cookie"]; 
+
+    const jobResponse = await request(app)
+      .post("/api/jobs/")
+      .set("Cookie", secondUsertoken)
+      .send(validJobData);
+
+    secondJobId = jobResponse.body.job.id;
+
+    // Test trying to delete the first user's job as the second user.
+    const response = await request(app)
+      .delete(`/api/jobs/${jobId}`)
+      .set("Cookie", secondUsertoken);
+
+    expect(response.statusCode).toBe(404);
+
+    const userOneJob = await Job.findByPk(jobId);
+
+    expect(userOneJob).not.toBeNull();
+
+    // Test trying to delete the second user's job as the first user
+    const responseTwo = await request(app)
+      .delete(`/api/jobs/${secondJobId}`)
+      .set("Cookie", token);
+
+    expect(responseTwo.statusCode).toBe(404);
+
+    const userTwoJob = await Job.findByPk(secondJobId);
+
+    expect(userTwoJob).not.toBeNull();
+  });
+
+
+  
 });
