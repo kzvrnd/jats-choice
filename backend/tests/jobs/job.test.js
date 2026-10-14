@@ -417,7 +417,7 @@ describe("POST /api/jobs/", () => {
     );
   });
 
-  test("A success request when salarymin and salarymax are equal", async () => {
+  test("A successful request when salarymin and salarymax are equal", async () => {
 
     const response = await request(app)
       .post("/api/jobs/")
@@ -603,11 +603,12 @@ describe("GET /api/jobs/", () => {
       expect.arrayContaining([
         expect.objectContaining({
           title: "User 2 Job Title",
-          company: "User 2 Job Company",
-          userId: jobTestUserId   
+          company: "User 2 Job Company"           
         })
       ])  
     );
+    
+    expect(response.body.jobs).toHaveLength(1);
       
   });
 
@@ -1277,10 +1278,16 @@ describe("PATCH /api/jobs/:id", () => {
 
   });
 
-  
+  test("returns an error if all fields are empty", async () => {
 
+    const response = await request(app)
+      .patch(`/api/jobs/${jobId}`)
+      .set("Cookie", token)
+      .send({}); 
 
-
+    expect(response.statusCode).toBe(400);   
+    expect(response.body.message).toBe("At least one field must be provided to update.");    
+  });
 
 });
 
@@ -1363,14 +1370,14 @@ describe("DELETE /api/jobs/:id", () => {
         password: secondUser.password
       });
 
-    let secondUsertoken = loginResponse.headers["set-cookie"]; 
+    const secondUsertoken = loginResponse.headers["set-cookie"]; 
 
     const jobResponse = await request(app)
       .post("/api/jobs/")
       .set("Cookie", secondUsertoken)
       .send(validJobData);
 
-    secondJobId = jobResponse.body.job.id;
+    const secondJobId = jobResponse.body.job.id;
 
     // Test trying to delete the first user's job as the second user.
     const response = await request(app)
@@ -1395,6 +1402,63 @@ describe("DELETE /api/jobs/:id", () => {
     expect(userTwoJob).not.toBeNull();
   });
 
+  test("returns an error if the jobId does not exist", async () => {
 
-  
+    const response = await request(app)
+      .delete(`/api/jobs/${jobId + 1}`)
+      .set("Cookie", token);
+
+    expect(response.statusCode).toBe(404);   
+    expect(response.body.message).toBe("Job not found.");    
+  });
+
+  test("returns an error if the user is not authenticated", async () => {
+
+    const response = await request(app)
+      .delete(`/api/jobs/${jobId}`);
+
+    expect(response.statusCode).toBe(401);   
+    expect(response.body.message).toBe("Unauthorized: No token detected");    
+  });
+
+  test("deleting the same job twice returns an error", async () => {
+    const response = await request(app)
+      .delete(`/api/jobs/${jobId}`)
+      .set("Cookie", token);
+
+    const responseTwo = await request(app)
+      .delete(`/api/jobs/${jobId}`)
+      .set("Cookie", token);
+
+    expect(responseTwo.statusCode).toBe(404);   
+    expect(responseTwo.body.message).toBe("Job not found.");    
+  });
+
+  test("delete only the specific job when the user has multiple jobs", async () => {
+
+    const jobResponse = await request(app)
+      .post("/api/jobs/")
+      .set("Cookie", token)
+      .send({...validJobData,
+        title: " Job 2 Title",
+        company: "Job 2 Company",
+      });
+
+    const secondJobId = jobResponse.body.job.id;  
+
+    const response = await request(app)
+      .delete(`/api/jobs/${secondJobId}`)
+      .set("Cookie", token);
+
+    expect(response.statusCode).toBe(204);
+
+    const deletedJob = await Job.findByPk(secondJobId);
+
+    expect(deletedJob).toBeNull();  
+
+    const userJobs = await Job.findAll({ where: { userId: jobTestUserId }});
+
+    expect(userJobs.length).toBe(1);
+  });
+
 });

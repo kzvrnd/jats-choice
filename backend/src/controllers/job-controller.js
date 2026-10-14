@@ -10,9 +10,8 @@ export const addJob = async (req, res, next) => {
   try {
     const job = await jobService.createJob(req.user.id, jobDetails);
     return res.status(201).json({ message: "Job created successfully", job: job });
-  } catch (error) {
+  } catch (error) {    
     
-    //return res.status(400).json({ message: error.message});
     next(error);
   }
 }
@@ -26,8 +25,7 @@ export const getJobs = async (req, res, next) => {
   try {
     const result = await jobService.getJobsFiltered(userId, query);
     res.status(200).json({ message: "Jobs fetched successfully", ...result});
-  } catch (error) {
-    //return res.status(500).json({ error: "Failed to fetch jobs"});
+  } catch (error) {    
     next(error);
   }
 }
@@ -38,13 +36,11 @@ export const deleteJob = async (req, res, next) => {
   const { id: jobId } = matchedData(req);
 
   try {
-    await jobService.deleteJob(userId, jobId);
-    //return res.status(200).json({ message: "Job deleted successfully"});
+    await jobService.deleteJob(userId, jobId);    
     return res.status(204).send();
 
-  } catch (error) {
+  } catch (error) {  
     
-    //return res.status(error.statusCode || 500).json({ message: error.message || "Sever error deleting job"});
     next(error);
   }
 }  
@@ -58,8 +54,6 @@ export const updateJob = async (req, res, next) => {
     const job = await jobService.update(userId, jobId, updateDetails);
     return res.status(200).json({ message: "Job updated successfully", job: job });
   } catch (error) {
-    //console.log(error);
-    //return res.status(400).json({ message: error.message});
     next(error);
   }
 }
