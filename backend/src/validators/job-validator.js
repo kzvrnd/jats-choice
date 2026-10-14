@@ -265,6 +265,6 @@ export const jobQueryValidator = [
 export const jobIdValidator = [
   param("id")
     .exists().withMessage("Job ID is required")
-    .isInt({ min: 1 }).withMessage("Job ID must be an number")
+    .isInt({ min: 1 }).withMessage("Job ID must be a number")
     .toInt()
 ];

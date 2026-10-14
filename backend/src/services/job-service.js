@@ -50,6 +50,11 @@ export const update = async (userId, jobId, jobData) => {
     throw new AppError('Minimum salary cannot be greater than maximum salary.', 400);
   }
 
+  // if jobData is an empty object, then no fields were updated
+  if (Object.keys(jobData).length === 0) {
+    throw new AppError('At least one field must be provided to update.', 400);
+  }
+
   const allowedFields = [
     "title", "company", "location",
     "description", "status", "employmentType",
