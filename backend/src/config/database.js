@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 
 
 // load env variables
-dotenv.config({ path: ".env.development" });
+//dotenv.config({ path: ".env.development" });
+dotenv.config({ path: process.env.NODE_ENV === "test" ? ".env.test" : ".env.development" });
 
 
 // export const sequelize = new Sequelize({
@@ -37,7 +38,7 @@ export const sequelize = new Sequelize(
 
 export const connectDB = async () => {
   try{
-    // Just tests the connection does not create tables (sqlite file based so no real connection yet)
+    // Just tests the connection does not create tables 
     await sequelize.authenticate();
     console.log('Connection has been established successfully. ✅');
   } catch (error) {

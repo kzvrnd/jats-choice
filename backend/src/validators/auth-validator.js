@@ -25,9 +25,9 @@ export const validateChangePassword =  [
 export const validateSignup = [
 
   body("username")
+  .isString().withMessage("Username must be a string")
   .trim()
   .notEmpty().withMessage("Username is required")
-  .isString().withMessage("Username must be a string")
   .isLength({ min: 3 }).withMessage("Username must be at least 3 characters long"),
 
   body("email")
@@ -44,13 +44,16 @@ export const validateUpdate =  [
 
   body("username")
   .optional()
+  .isString().withMessage("Username must be a string")
   .trim()
   .notEmpty().withMessage("Username is required"),
 
   body("email")
   .optional()
+  .isString().withMessage("Email must be a string")
   .trim()
   .notEmpty().withMessage("Email is required")
+  .bail()
   .isEmail().withMessage("Invalid email address")
   .normalizeEmail(),
   

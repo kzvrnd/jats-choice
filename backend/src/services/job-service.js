@@ -2,25 +2,22 @@ import { Job } from "../models/index.js";
 import { Op } from "sequelize";
 import { AppError } from "../utils/app-error.js";
 
-export const createJob = async( userId, jobData ) => {
+export const createJob = ( userId, jobData ) => {
   const {title, company, location, description, status, employmentType, contact, salaryMin, salaryMax } = jobData;
 
   if (!title || !company) {
     throw new AppError('Title and company are required.', 400);
   }
 
-  // While below works, not best since two DB calls
-  // const user = await User.findByPk(req.user.id);
-  // const job = await user.createJob({ title, company });
-
-  // Both of these are valid returns, but just returning the promise seems to be more preferred and no await.
-  return await Job.create({ title, company, location, description, status, employmentType, contact, salaryMin, salaryMax, userId });
-  //return Jobs.create({ title, company, userId });
+  // Both of these are valid returns, but just returning the promise seems to be more preferred and no await Q-in.
+  //return await Job.create({ title, company, location, description, status, employmentType, contact, salaryMin, salaryMax, userId });
+  
+  return Job.create({ title, company, location, description, status, employmentType, contact, salaryMin, salaryMax, userId });
   
 }
 
-export const getJobsByUser = async (userId) => {
-  return await Job.findAll({ where: { userId }});
+export const getJobsByUser = (userId) => {
+  return Job.findAll({ where: { userId }});
 }
 
 
@@ -40,6 +37,19 @@ export const update = async (userId, jobId, jobData) => {
   
   if (!job) {
     throw new AppError('Job not found.', 404);
+  }
+
+  // Service layer check to validate potential error when only one of salaryMin or salaryMax is updated
+  const newSalaryMin = jobData.salaryMin !== undefined ? jobData.salaryMin : job.salaryMin;
+  const newSalaryMax = jobData.salaryMax !== undefined ? jobData.salaryMax : job.salaryMax;  
+  
+  if (newSalaryMin > newSalaryMax) {
+    throw new AppError('Minimum salary cannot be greater than maximum salary.', 400);
+  }
+
+  // if jobData is an empty object, then no fields were updated
+  if (Object.keys(jobData).length === 0) {
+    throw new AppError('At least one field must be provided to update.', 400);
   }
 
   const allowedFields = [
@@ -108,7 +118,7 @@ export const getJobsFiltered = async (userId, filters) => {
 
   if (location) {
     where.location = {
-      [Op.ilike]: `%${location}%`,
+      [Op.iLike]: `%${location}%`,
     }
   }
 
@@ -116,7 +126,7 @@ export const getJobsFiltered = async (userId, filters) => {
     where.employmentType = employmentType;
   }
 
-  if (salaryMin || salaryMax) {
+  if (salaryMin !== undefined || salaryMax !== undefined) {
     const min = salaryMin ? parseInt(salaryMin) : null;
     const max = salaryMax ? parseInt(salaryMax) : null;
 
@@ -125,7 +135,7 @@ export const getJobsFiltered = async (userId, filters) => {
       where[Op.and] = [];
     }
 
-    if (min) {
+    if (min !== null) {
       where[Op.and].push({ salaryMin: { [Op.gte]: min } });
     }
     if (max) {

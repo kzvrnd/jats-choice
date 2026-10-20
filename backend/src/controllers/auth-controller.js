@@ -21,10 +21,7 @@ export const createUser = async(req, res, next) => {
     });
 
   } catch (error) {
-    // pre error handler middleware
-    //res.status(400).json({ message: "Error creating user", error: error.message});
 
-    // post error handler middleware
     next(error);
   }
 
@@ -33,6 +30,7 @@ export const createUser = async(req, res, next) => {
 export const loginUser = async(req, res, next) => {
   const { email, password } = matchedData(req);
 
+  //fail safe in case email or password is missing and passes through validation
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required"});
   }
@@ -42,16 +40,14 @@ export const loginUser = async(req, res, next) => {
 
     // option for secure cookie set to false for development only
     res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 });
-    // console.log("Token from cookie:", req.cookies.token);
-    // console.log("Setting cookie with token:", token);
-    console.log('Set-Cookie header:', res.getHeader('Set-Cookie')); // <-- log the raw cookie header
+    
+    //console.log('Set-Cookie header:', res.getHeader('Set-Cookie')); // <-- log the raw cookie header
     res.status(200).json({ message: `${user.username} Logged in successfully` });
     
     
   } catch (error) {
-    //console.log(error);
-    next(error);
-    
+  
+    next(error);    
   }  
 }
 
@@ -62,15 +58,15 @@ export const logoutUser = (req, res) => {
  
 
 export const updateUserInfo = async (req, res, next) => {
-  const userId = req.user.id;
+  const userId = req.user.id; 
   const info = matchedData(req); 
 
   try {
     const updatedUser = await updatedUserInfo(userId, info);
     return res.status(200).json({ message: "User updated successfully", user: updatedUser });
 
-  } catch (error) {    
-    //return res.status(400).json({ message: "Error updating user"});
+  } catch (error) { 
+    
     next(error);
   }
 }
@@ -83,7 +79,7 @@ export const updatePassword = async (req, res, next) => {
     const updatedUser = await changePassword(userId, password, newPassword);
     return res.status(200).json({ message: "Password updated successfully", user: updatedUser });
   } catch (error) {    
-    //return res.status(401).json({ message: "Error updating password"});
+   
     next(error)
   }
 }

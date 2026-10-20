@@ -43,28 +43,36 @@ export const createJobValidator = [
 
   body("salaryMin")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMin must be a positive integer")
+    .isInt({ min: 0 }).withMessage("Minimum salary must be 0 or greater")
     .toInt(),
 
   body("salaryMax")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMax must be a positive integer")
-    .toInt(),
+    .isInt({ min: 0 }).withMessage("Maximum salary must be 0 or greater")
+    .toInt()
+    .custom((salaryMax, { req }) => {
+      const { salaryMin } = req.body;
+      if (salaryMin !== undefined && salaryMax !== undefined && Number(salaryMin) > Number(salaryMax)) {
+        throw new Error("Minimum salary must be less than or equal to maximum salary");
+      }
+      return true; 
+    }),
+
 
   // Salary range cross-field validation
-  body().custom((_, { req }) => {
-    const { salaryMin, salaryMax } = req.body;
+  // body("salaryMax").custom((_, { req }) => {
+  //   const { salaryMin, salaryMax } = req.body;
 
-    if (
-      salaryMin !== undefined &&
-      salaryMax !== undefined &&
-      Number(salaryMin) > Number(salaryMax)
-    ) {
-      throw new Error("salaryMin must be less than or equal to salaryMax");
-    }
+  //   if (
+  //     salaryMin !== undefined &&
+  //     salaryMax !== undefined &&
+  //     Number(salaryMin) > Number(salaryMax)
+  //   ) {
+  //     throw new Error("Minimum salary must be less than or equal to maximum salary");
+  //   }
 
-    return true;
-  }),
+  //   return true;
+  // }),
 
   body("contact")
     .optional()
@@ -89,18 +97,20 @@ export const createJobValidator = [
 export const updateJobValidator = [
 
   param("id").exists().withMessage("Job ID is required")
-    .isInt().withMessage("Job ID must be a number"),
+    .isInt({ min: 1 }).withMessage("Job ID must be a positive number")
+    .toInt(),
 
   body("title")
     .optional()
-    .trim()
-    .notEmpty().withMessage("Title cannot be empty")
+    .isString().withMessage("Title must be a string")
     .bail()
-    .isString().withMessage("Title must be a string"),
+    .trim()
+    .notEmpty().withMessage("Title cannot be empty"),
 
   body("company")
     .optional()
-    .isString().withMessage("Company must be a string")    
+    .isString().withMessage("Company must be a string")
+    .bail()    
     .trim()
     .notEmpty().withMessage("Company cannot be empty"),
 
@@ -116,27 +126,34 @@ export const updateJobValidator = [
 
   body("salaryMin")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMin must be a positive integer")
+    .isInt({ min: 0 }).withMessage("Minimum salary must be 0 or greater")
     .toInt(),
 
   body("salaryMax")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMax must be a positive integer")
-    .toInt(),
+    .isInt({ min: 0 }).withMessage("Maximum salary must be 0 or greater")
+    .toInt()
+    .custom((salaryMax, { req }) => {
+      const { salaryMin } = req.body;
+      if (salaryMin !== undefined && salaryMax !== undefined && Number(salaryMin) > Number(salaryMax)) {
+        throw new Error("Minimum salary must be less than or equal to maximum salary");
+      }
+      return true; 
+    }),
 
-  body().custom((_, { req }) => {
-    const { salaryMin, salaryMax } = req.body;
+  // body().custom((_, { req }) => {
+  //   const { salaryMin, salaryMax } = req.body;
 
-    if (
-      salaryMin !== undefined &&
-      salaryMax !== undefined &&
-      Number(salaryMin) > Number(salaryMax)
-    ) {
-      throw new Error("salaryMin must be <= salaryMax");
-    }
+  //   if (
+  //     salaryMin !== undefined &&
+  //     salaryMax !== undefined &&
+  //     Number(salaryMin) > Number(salaryMax)
+  //   ) {
+  //     throw new Error("salaryMin must be <= salaryMax");
+  //   }
 
-    return true;
-  }),
+  //   return true;
+  // }),
 
   body("contact")
     .optional()
@@ -186,32 +203,39 @@ export const jobQueryValidator = [
 
   query("salaryMin")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMin must be a positive integer")
+    .isInt({ min: 0 }).withMessage("salaryMin must be 0 or greater")
     .toInt(),
 
   query("salaryMax")
     .optional()
-    .isInt({ min: 0 }).withMessage("salaryMax must be a positive integer")
-    .toInt(),
+    .isInt({ min: 0 }).withMessage("salaryMax must 0 or greater")
+    .toInt()
+    .custom((salaryMax, { req }) => {
+      const { salaryMin } = req.query;
+      if (salaryMin !== undefined && salaryMax !== undefined && salaryMin > salaryMax) {
+        throw new Error("Minimum salary must be less than or equal to maximum salary");
+      }
+      return true;
+    }),
 
   
-  query().custom((_, { req }) => {
-    const { salaryMin, salaryMax } = req.query;
+  // query().custom((_, { req }) => {
+  //   const { salaryMin, salaryMax } = req.query;
 
-    if (
-      salaryMin !== undefined &&
-      salaryMax !== undefined &&
-      Number(salaryMin) > Number(salaryMax)
-    ) {
-      throw new Error("salaryMin must be <= salaryMax");
-    }
+  //   if (
+  //     salaryMin !== undefined &&
+  //     salaryMax !== undefined &&
+  //     Number(salaryMin) > Number(salaryMax)
+  //   ) {
+  //     throw new Error("Minimum salary must be less than or equal to maximum salary");
+  //   }
 
-    return true;
-  }),
+  //   return true;
+  // }),
   
   query("page")
     .optional()
-    .isInt({ min: 1 }).withMessage("page must be >= 1")
+    .isInt({ min: 1 }).withMessage("page must be greater than 0")
     .toInt(),
 
   query("limit")
@@ -236,4 +260,11 @@ export const jobQueryValidator = [
     .toUpperCase()    
     .isIn(["ASC", "DESC"]).withMessage("order must be ASC or DESC"),
 
+];
+
+export const jobIdValidator = [
+  param("id")
+    .exists().withMessage("Job ID is required")
+    .isInt({ min: 1 }).withMessage("Job ID must be a number")
+    .toInt()
 ];
