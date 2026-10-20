@@ -60,7 +60,7 @@ export const updateJob = async (req, res, next) => {
 
 
 
-// new segment
+//development controller to test new segment
 
 export const getNewJob = async (req, res, next) => {
 

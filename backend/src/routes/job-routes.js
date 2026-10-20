@@ -4,7 +4,7 @@ import { createJobValidator, updateJobValidator, jobQueryValidator, jobIdValidat
 import { validateRequest } from '../middleware/validate.js';
 import { authenticate } from '../middleware/auth-middleware.js';
 
-//inprogress import
+//development import only for testing
 import { getNewJob } from '../controllers/job-controller.js';
 
 // /api/jobs
@@ -15,11 +15,8 @@ router.get('/', authenticate, jobQueryValidator, validateRequest, getJobs);
 router.delete('/:id', authenticate,jobIdValidator, validateRequest, deleteJob);
 router.patch('/:id', authenticate, updateJobValidator, validateRequest, updateJob);
 
-//New endpoint testing
-//router.get('/getnewjobs', authenticate, jobQueryValidator, validateRequest, getNewJob);
 
-
-//router.get('/getnewjobs', authenticate, jobQueryValidator, validateRequest, getNewJob);
+// development routes testing only
 router.get('/getjobs', authenticate, getNewJob);
 
 export default router
