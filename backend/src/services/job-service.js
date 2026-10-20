@@ -2,25 +2,22 @@ import { Job } from "../models/index.js";
 import { Op } from "sequelize";
 import { AppError } from "../utils/app-error.js";
 
-export const createJob = async( userId, jobData ) => {
+export const createJob = ( userId, jobData ) => {
   const {title, company, location, description, status, employmentType, contact, salaryMin, salaryMax } = jobData;
 
   if (!title || !company) {
     throw new AppError('Title and company are required.', 400);
   }
 
-  // While below works, not best since two DB calls
-  // const user = await User.findByPk(req.user.id);
-  // const job = await user.createJob({ title, company });
-
   // Both of these are valid returns, but just returning the promise seems to be more preferred and no await Q-in.
-  return await Job.create({ title, company, location, description, status, employmentType, contact, salaryMin, salaryMax, userId });
-  //return Jobs.create({ title, company, userId });
+  //return await Job.create({ title, company, location, description, status, employmentType, contact, salaryMin, salaryMax, userId });
+  
+  return Job.create({ title, company, location, description, status, employmentType, contact, salaryMin, salaryMax, userId });
   
 }
 
-export const getJobsByUser = async (userId) => {
-  return await Job.findAll({ where: { userId }});
+export const getJobsByUser = (userId) => {
+  return Job.findAll({ where: { userId }});
 }
 
 

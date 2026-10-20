@@ -13,8 +13,7 @@ describe("POST /api/auth/login", () => {
     const response = await request(app)
       .post("/api/auth/signup")
       .send(testUser);
-
-    //console.log("SIGNUP REPONSE:", response.body);
+    
     expect(response.statusCode).toBe(201);
   });
 
@@ -27,8 +26,7 @@ describe("POST /api/auth/login", () => {
         password: testUser.password
       });
 
-
-    //console.log(response.body);
+    
     expect(response.statusCode).toBe(200);    
 
     expect(response.body.message)

@@ -6,8 +6,7 @@ const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
   await connectDB();
-
-  // Creates/updates tables
+  
   await sequelize.sync(); 
   console.log('All Tables synced ✅');
 
